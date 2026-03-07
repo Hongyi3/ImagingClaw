@@ -1,0 +1,20 @@
+{
+  "title": "ClawImaging",
+  "description": "Reproducibility-first computational imaging skill library scaffold.",
+  "license": "BSD-3-Clause",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Replace, With Real Maintainer Names",
+      "affiliation": "Your Institution"
+    }
+  ],
+  "keywords": [
+    "computational imaging",
+    "inverse problems",
+    "tomography",
+    "MRI",
+    "phase retrieval",
+    "reproducibility"
+  ]
+}

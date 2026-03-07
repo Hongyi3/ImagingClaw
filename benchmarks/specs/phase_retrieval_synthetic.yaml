@@ -1,0 +1,46 @@
+name: phase-retrieval-synthetic
+version: 0.1.0
+modality: coherent-imaging
+task: fourier-phase-retrieval
+dataset:
+  name: synthetic-phase-objects
+  version: "0.1"
+  split: canonical
+  access: open
+forward_model:
+  operator: magnitude-of-fourier-transform
+  geometry: planar
+  noise_model: gaussian
+preprocessing:
+  - Use the canonical synthetic split without mixing generated objects across subsets.
+  - Preserve magnitude-only measurements as declared by the benchmark forward model.
+calibration_assumptions:
+  - The forward model assumes a planar Fourier magnitude acquisition with no missing-data mask.
+  - Synthetic objects provide ground-truth phase for evaluation only.
+methods:
+  - name: gerchberg-saxton
+    class: analytic
+  - name: wirtinger-flow
+    class: iterative
+  - name: learned-prior-baseline
+    class: learned
+metrics:
+  - relative-error
+  - psnr
+seeds:
+  train: 41
+  eval: 43
+hardware:
+  reference_device: cpu-compatible smoke benchmark
+  accelerator: optional
+  notes:
+    - This synthetic benchmark is intended for beta-phase protocol validation.
+environment:
+  python: ">=3.10"
+  dependency_sources:
+    - pyproject.toml
+  notes:
+    - Synthetic benchmark manifests must remain measurement-domain explicit.
+    - Replace this track with a public benchmark-grade dataset in a later phase.
+notes:
+  smoke_subset: 16

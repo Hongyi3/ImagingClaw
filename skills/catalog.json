@@ -1,0 +1,167 @@
+{
+  "project": "ClawImaging",
+  "skills": [
+    {
+      "name": "benchmark-run",
+      "cli_alias": "bench",
+      "description": "Validate declared benchmark specs against the dataset registry and emit resolved benchmark artifact bundles with consistent reporting.",
+      "version": "0.1.0",
+      "status": "prototype",
+      "modality": "cross-cutting",
+      "measurement_domain": "n/a",
+      "forward_model": "benchmark-spec",
+      "has_script": true,
+      "has_tests": false,
+      "has_demo": true,
+      "demo_command": "python skills/benchmark-run/benchmark_run.py --demo --output /tmp/benchmark-run-demo",
+      "dependencies": [],
+      "tags": [],
+      "trigger_keywords": [
+        "benchmark",
+        "compare methods",
+        "run evaluation",
+        "leaderboard"
+      ],
+      "chaining_partners": [
+        "ct-recon",
+        "mri-recon",
+        "phase-retrieve",
+        "repro-export",
+        "paper-figure"
+      ]
+    },
+    {
+      "name": "ct-recon",
+      "cli_alias": "ct",
+      "description": "Reconstruct low-dose CT or tomography measurements with declared geometry, baselines, and artifact bundles.",
+      "version": "0.1.0",
+      "status": "scaffold",
+      "modality": "ct",
+      "measurement_domain": "sinogram",
+      "forward_model": "x-ray-transform",
+      "has_script": true,
+      "has_tests": false,
+      "has_demo": true,
+      "demo_command": "python skills/ct-recon/ct_recon.py --demo --output /tmp/ct-recon-demo",
+      "dependencies": [],
+      "tags": [],
+      "trigger_keywords": [
+        "ct reconstruction",
+        "low-dose ct",
+        "sinogram",
+        "tomography"
+      ],
+      "chaining_partners": [
+        "benchmark-run",
+        "repro-export",
+        "paper-figure"
+      ]
+    },
+    {
+      "name": "mri-recon",
+      "cli_alias": "mri",
+      "description": "Reconstruct raw k-space MRI measurements with declared coil handling, baselines, and artifact bundles.",
+      "version": "0.1.0",
+      "status": "scaffold",
+      "modality": "mri",
+      "measurement_domain": "k-space",
+      "forward_model": "fourier-encoding",
+      "has_script": true,
+      "has_tests": false,
+      "has_demo": true,
+      "demo_command": "python skills/mri-recon/mri_recon.py --demo --output /tmp/mri-recon-demo",
+      "dependencies": [],
+      "tags": [],
+      "trigger_keywords": [
+        "mri reconstruction",
+        "k-space",
+        "parallel imaging",
+        "fastmri"
+      ],
+      "chaining_partners": [
+        "benchmark-run",
+        "repro-export",
+        "paper-figure"
+      ]
+    },
+    {
+      "name": "paper-figure",
+      "cli_alias": "paperfig",
+      "description": "Regenerate manuscript figures and tables directly from artifact bundles and benchmark specs.",
+      "version": "0.1.0",
+      "status": "scaffold",
+      "modality": "cross-cutting",
+      "measurement_domain": "n/a",
+      "forward_model": "artifact-to-paper",
+      "has_script": true,
+      "has_tests": false,
+      "has_demo": true,
+      "demo_command": "python skills/paper-figure/paper_figure.py --demo --output /tmp/paper-figure-demo",
+      "dependencies": [],
+      "tags": [],
+      "trigger_keywords": [
+        "paper figure",
+        "regenerate figure",
+        "rebuild table",
+        "manuscript reproduction"
+      ],
+      "chaining_partners": [
+        "benchmark-run",
+        "repro-export"
+      ]
+    },
+    {
+      "name": "phase-retrieve",
+      "cli_alias": "phase",
+      "description": "Recover object estimates from magnitude-only coherent imaging measurements with explicit forward-model assumptions.",
+      "version": "0.1.0",
+      "status": "scaffold",
+      "modality": "coherent-imaging",
+      "measurement_domain": "fourier-magnitude",
+      "forward_model": "magnitude-of-fourier-transform",
+      "has_script": true,
+      "has_tests": false,
+      "has_demo": true,
+      "demo_command": "python skills/phase-retrieve/phase_retrieve.py --demo --output /tmp/phase-retrieve-demo",
+      "dependencies": [],
+      "tags": [],
+      "trigger_keywords": [
+        "phase retrieval",
+        "gerchberg-saxton",
+        "magnitude-only",
+        "coherent imaging"
+      ],
+      "chaining_partners": [
+        "benchmark-run",
+        "repro-export",
+        "paper-figure"
+      ]
+    },
+    {
+      "name": "repro-export",
+      "cli_alias": "repro",
+      "description": "Convert any supported ClawImaging run into an archive-ready reproducibility bundle.",
+      "version": "0.1.0",
+      "status": "scaffold",
+      "modality": "cross-cutting",
+      "measurement_domain": "n/a",
+      "forward_model": "artifact-bundle",
+      "has_script": true,
+      "has_tests": false,
+      "has_demo": true,
+      "demo_command": "python skills/repro-export/repro_export.py --demo --output /tmp/repro-export-demo",
+      "dependencies": [],
+      "tags": [],
+      "trigger_keywords": [
+        "reproducibility bundle",
+        "archive run",
+        "export artifact",
+        "doi package"
+      ],
+      "chaining_partners": [
+        "benchmark-run",
+        "paper-figure"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+datasets:
+  - name: lodopab-ct
+    version: "1.0"
+    modality: ct
+    measurement_domain: sinogram
+    data_kind: raw-measurements
+    access: open
+    source: Leuschner et al., LoDoPaB-CT benchmark dataset for low-dose CT reconstruction.
+    redistribution_policy: Follow the published LoDoPaB-CT dataset terms; redistribute metadata only.
+    license_or_terms: See the upstream LoDoPaB-CT dataset terms and citation guidance.
+    labels: []
+    known_preprocessing_assumptions:
+      - Sinograms follow the published LoDoPaB benchmark preprocessing and split protocol.
+      - Evaluation reports treat the released measurements as the measurement-domain source of truth.
+    card: datasets/cards/lodopab-ct.md
+    notes:
+      - Flagship public CT benchmark track.
+
+  - name: fastmri-knee
+    version: public-release
+    modality: mri
+    measurement_domain: k-space
+    data_kind: raw-measurements
+    access: application-required
+    source: "Zbontar et al., fastMRI: An Open Dataset and Benchmarks for Accelerated MRI."
+    redistribution_policy: Do not redistribute raw data; share only code, configs, and permitted derived metrics.
+    license_or_terms: NYU fastMRI data sharing agreement and publication requirements.
+    labels:
+      - reference image
+      - acquisition metadata
+    known_preprocessing_assumptions:
+      - This phase-1 benchmark targets the documented single-coil example split.
+      - No silent conversion from reconstructed images back to k-space is permitted.
+    card: datasets/cards/fastmri-knee.md
+    notes:
+      - Controlled-access MRI benchmark track.
+      - Access requires compliance with upstream data-use terms.
+
+  - name: synthetic-phase-objects
+    version: "0.1"
+    modality: coherent-imaging
+    measurement_domain: fourier-magnitude
+    data_kind: synthetic-measurements
+    access: open
+    source: Repository-local synthetic phase objects generated from analytic phantoms for smoke benchmarking.
+    redistribution_policy: Repository metadata and generated synthetic measurements may be redistributed with attribution.
+    license_or_terms: Internal scaffold dataset to be replaced by a public benchmark-grade coherent-imaging dataset.
+    labels:
+      - ground-truth phase
+    known_preprocessing_assumptions:
+      - Objects are synthetic analytic phantoms rather than laboratory measurements.
+      - Magnitude-only Fourier measurements are generated from the declared forward model.
+    card: datasets/cards/synthetic-phase-objects.md
+    notes:
+      - Starter dataset for phase retrieval demos.

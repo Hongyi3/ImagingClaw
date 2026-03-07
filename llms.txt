@@ -1,0 +1,60 @@
+# ClawImaging
+
+> ClawImaging is a reproducibility-first computational imaging skill library.
+> It preserves the strongest architectural ideas from ClawBio—modular skills,
+> orchestration, local-first execution, and artifact bundles—and retargets them
+> to CT, MRI, coherent imaging, and benchmark-driven open research software.
+
+## Core docs
+
+- `README.md` — project overview and quickstart
+- `PROJECT-CHARTER.md` — mission, scope, non-goals, definition of done
+- `BLUEPRINT.md` — full architecture and roadmap
+- `AGENTS.md` — repository instructions for coding agents
+- `CLAUDE.md` — routing notes
+- `CONTRIBUTING.md` — how to add a skill
+- `GOVERNANCE.md` — roles, proposals, and release process
+
+## Detailed docs
+
+- `docs/architecture.md`
+- `docs/benchmark-policy.md`
+- `docs/dataset-policy.md`
+- `docs/reproducibility-contract.md`
+- `docs/licensing.md`
+- `docs/publication-strategy.md`
+- `docs/codex-playbook.md`
+- `docs/reference-stack.md`
+- `docs/references.md`
+
+## Skills
+
+- `ct-recon` — CT / tomography reconstruction
+- `mri-recon` — raw k-space MRI reconstruction
+- `phase-retrieve` — phase retrieval / coherent imaging
+- `benchmark-run` — run declared benchmark tracks
+- `repro-export` — archive-ready reproducibility export
+- `paper-figure` — regenerate manuscript figures and tables
+
+## Python package
+
+- `src/clawimaging/cli.py` — CLI entry point
+- `src/clawimaging/registry.py` — skill catalog loading
+- `src/clawimaging/orchestrator.py` — routing logic
+- `src/clawimaging/specs.py` — experiment and benchmark data models
+- `src/clawimaging/artifacts.py` — reproducibility bundle creation
+- `src/clawimaging/scaffold_skill.py` — demo skill helper
+
+## Commands
+
+```bash
+python scripts/generate_catalog.py
+python -m pytest
+python -m src.clawimaging.cli list
+python skills/ct-recon/ct_recon.py --demo --output /tmp/clawimaging-ct-demo
+python skills/mri-recon/mri_recon.py --demo --output /tmp/clawimaging-mri-demo
+```
+
+## Agent rule of thumb
+
+Prefer explicit experiment specs, explicit provenance, and explicit artifact bundles.

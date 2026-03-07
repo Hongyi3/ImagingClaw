@@ -1,0 +1,47 @@
+name: fastmri-knee-baselines
+version: 0.1.0
+modality: mri
+task: accelerated-mri-reconstruction
+dataset:
+  name: fastmri-knee
+  version: public-release
+  split: singlecoil-example
+  access: application-required
+forward_model:
+  operator: fourier-encoding
+  geometry: cartesian
+  noise_model: acquisition-native
+preprocessing:
+  - Restrict to the documented single-coil example split for smoke validation.
+  - Keep k-space as the declared measurement-domain input.
+calibration_assumptions:
+  - Sensitivity-map assumptions are method-specific and must be reported explicitly in later phases.
+  - No hidden retrospective mask changes are allowed.
+methods:
+  - name: rss-zero-fill
+    class: analytic
+  - name: cg-sense
+    class: iterative
+  - name: varnet-baseline
+    class: learned
+metrics:
+  - nmse
+  - psnr
+  - ssim
+seeds:
+  train: 31
+  eval: 37
+hardware:
+  reference_device: cpu-compatible smoke benchmark
+  accelerator: optional
+  notes:
+    - Controlled-access data assumptions must be documented in any downstream report.
+environment:
+  python: ">=3.10"
+  dependency_sources:
+    - pyproject.toml
+  notes:
+    - fastMRI access terms govern data handling outside the repository.
+    - Artifact bundles may include metadata and derived metrics only.
+notes:
+  smoke_subset: 4

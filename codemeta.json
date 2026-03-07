@@ -1,0 +1,24 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "name": "ClawImaging",
+  "description": "Reproducibility-first computational imaging skill library scaffold.",
+  "codeRepository": "https://github.com/YOUR-ORG/ClawImaging",
+  "license": "https://spdx.org/licenses/BSD-3-Clause.html",
+  "programmingLanguage": ["Python"],
+  "keywords": [
+    "computational imaging",
+    "inverse problems",
+    "MRI",
+    "tomography",
+    "phase retrieval",
+    "reproducibility"
+  ],
+  "developmentStatus": "concept",
+  "author": [
+    {
+      "@type": "Organization",
+      "name": "Replace with your lab or org"
+    }
+  ]
+}

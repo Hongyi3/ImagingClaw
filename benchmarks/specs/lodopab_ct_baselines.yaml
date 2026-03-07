@@ -1,0 +1,47 @@
+name: lodopab-ct-baselines
+version: 0.1.0
+modality: ct
+task: low-dose-ct-reconstruction
+dataset:
+  name: lodopab-ct
+  version: "1.0"
+  split: standard
+  access: open
+forward_model:
+  operator: x-ray-transform
+  geometry: parallel-beam
+  noise_model: poisson
+preprocessing:
+  - Use the published LoDoPaB benchmark split without silent case filtering.
+  - Preserve measurement-domain sinograms as the benchmark input.
+calibration_assumptions:
+  - No additional calibration beyond the published LoDoPaB geometry metadata.
+  - Dose assumptions follow the benchmark protocol and are not inferred from reconstructions.
+methods:
+  - name: fbp
+    class: analytic
+  - name: tv-chambolle-pock
+    class: iterative
+  - name: unrolled-baseline
+    class: learned
+metrics:
+  - psnr
+  - ssim
+  - nrmse
+seeds:
+  train: 17
+  eval: 23
+hardware:
+  reference_device: cpu-compatible smoke benchmark
+  accelerator: optional
+  notes:
+    - Smoke validation must remain runnable without a dedicated GPU.
+environment:
+  python: ">=3.10"
+  dependency_sources:
+    - pyproject.toml
+  notes:
+    - Execute from the repository root.
+    - Capture resolved environment metadata in the artifact bundle.
+notes:
+  smoke_subset: 8

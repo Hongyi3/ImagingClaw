@@ -1,0 +1,103 @@
+clawimaging_prework/
+├── .github
+│   ├── workflows
+│   │   └── ci.yml
+│   ├── CODEOWNERS
+│   └── pull_request_template.md
+├── benchmarks
+│   ├── specs
+│   │   ├── fastmri_knee_baselines.yaml
+│   │   ├── lodopab_ct_baselines.yaml
+│   │   └── phase_retrieval_synthetic.yaml
+│   └── README.md
+├── codex
+│   ├── PHASE-0.md
+│   ├── PHASE-1.md
+│   ├── PHASE-2.md
+│   ├── PHASE-3.md
+│   └── README.md
+├── datasets
+│   ├── README.md
+│   └── registry.yaml
+├── docs
+│   ├── architecture.md
+│   ├── benchmark-policy.md
+│   ├── codex-playbook.md
+│   ├── dataset-policy.md
+│   ├── licensing.md
+│   ├── publication-strategy.md
+│   ├── reference-stack.md
+│   ├── references.md
+│   ├── release-checklist.md
+│   └── reproducibility-contract.md
+├── paper
+│   ├── AGENTS.override.md
+│   └── README.md
+├── scripts
+│   └── generate_catalog.py
+├── skills
+│   ├── benchmark-run
+│   │   ├── SKILL.md
+│   │   └── benchmark_run.py
+│   ├── ct-recon
+│   │   ├── SKILL.md
+│   │   └── ct_recon.py
+│   ├── mri-recon
+│   │   ├── SKILL.md
+│   │   └── mri_recon.py
+│   ├── paper-figure
+│   │   ├── SKILL.md
+│   │   └── paper_figure.py
+│   ├── phase-retrieve
+│   │   ├── SKILL.md
+│   │   └── phase_retrieve.py
+│   ├── repro-export
+│   │   ├── SKILL.md
+│   │   └── repro_export.py
+│   ├── AGENTS.override.md
+│   └── catalog.json
+├── src
+│   └── clawimaging
+│       ├── adapters
+│       │   ├── __init__.py
+│       │   ├── astra.py
+│       │   ├── bart.py
+│       │   ├── cil.py
+│       │   ├── deepinverse.py
+│       │   ├── odl.py
+│       │   ├── ptychography40.py
+│       │   ├── ptypy.py
+│       │   ├── pyxu.py
+│       │   ├── scico.py
+│       │   └── sigpy.py
+│       ├── __init__.py
+│       ├── artifacts.py
+│       ├── cli.py
+│       ├── orchestrator.py
+│       ├── registry.py
+│       ├── scaffold_skill.py
+│       └── specs.py
+├── templates
+│   └── SKILL-TEMPLATE.md
+├── tests
+│   ├── test_artifacts.py
+│   ├── test_orchestrator.py
+│   ├── test_registry.py
+│   └── test_specs.py
+├── .gitignore
+├── .zenodo.json
+├── AGENTS.md
+├── BLUEPRINT.md
+├── CITATION.cff
+├── CLAUDE.md
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── GOVERNANCE.md
+├── LICENSE
+├── Makefile
+├── PROJECT-CHARTER.md
+├── README.md
+├── SECURITY.md
+├── codemeta.json
+├── llms.txt
+└── pyproject.toml
