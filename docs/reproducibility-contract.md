@@ -35,6 +35,9 @@ The exact configuration actually used, after defaults are resolved.
 ### commands.sh
 The precise commands needed to reproduce the run.
 
+The emitted script should be executable so a reviewer can run it directly without repairing file
+permissions.
+
 ### analysis_log.md
 Chronological notes, warnings, and detected assumptions.
 
@@ -43,6 +46,10 @@ At least one environment capture format.
 
 ### checksums.sha256
 Integrity hashes for inputs and generated outputs.
+
+The checksum manifest should cover every generated bundle file except the checksum manifest itself.
+Artifact-bundle helpers should validate that the manifest is complete and matches on-disk content
+before a bundle is treated as complete.
 
 ### citation and archive metadata
 Sufficient metadata for citation, discovery, and archival packaging.

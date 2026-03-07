@@ -1,4 +1,41 @@
 datasets:
+  - name: ct-demo-phantoms
+    version: "0.1"
+    modality: ct
+    measurement_domain: sinogram
+    data_kind: synthetic-measurements
+    access: open
+    source: Repository-local deterministic CT phantoms and proxy low-dose sinograms for smoke testing.
+    redistribution_policy: Synthetic measurements and metadata may be redistributed with attribution.
+    license_or_terms: Repository-local synthetic demo data for smoke tests and documentation examples.
+    labels:
+      - reference image
+    known_preprocessing_assumptions:
+      - Sinograms are generated from repository-local phantoms with a deterministic parallel-beam proxy.
+      - The Poisson count model is an educational smoke approximation rather than a benchmark claim.
+    card: datasets/cards/ct-demo-phantoms.md
+    notes:
+      - Synthetic CT demo dataset for Phase 2 smoke workflows.
+
+  - name: mri-demo-kspace
+    version: "0.1"
+    modality: mri
+    measurement_domain: k-space
+    data_kind: synthetic-measurements
+    access: open
+    source: Repository-local deterministic MRI phantoms and undersampled multi-coil k-space for smoke testing.
+    redistribution_policy: Synthetic measurements and metadata may be redistributed with attribution.
+    license_or_terms: Repository-local synthetic demo data for smoke tests and documentation examples.
+    labels:
+      - reference image
+      - sampling mask
+    known_preprocessing_assumptions:
+      - K-space is synthesized from normalized coil sensitivities and a deterministic phantom.
+      - The undersampling mask is a smoke-level Cartesian proxy, not an upstream fastMRI protocol claim.
+    card: datasets/cards/mri-demo-kspace.md
+    notes:
+      - Synthetic MRI demo dataset for Phase 2 smoke workflows.
+
   - name: lodopab-ct
     version: "1.0"
     modality: ct

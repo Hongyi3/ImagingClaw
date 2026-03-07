@@ -65,7 +65,7 @@ def resolve_benchmark_manifest(
     resolved_registry_path = (
         Path(registry_path).resolve()
         if registry_path is not None
-        else (find_repo_root(resolved_spec_path) / "datasets" / "registry.yaml").resolve()
+        else _default_registry_path(resolved_spec_path)
     )
     manifest = benchmark.to_dict()
     dataset_manifest = dict(manifest["dataset"])
@@ -76,3 +76,11 @@ def resolve_benchmark_manifest(
         "dataset_registry": _display_path(resolved_registry_path),
     }
     return manifest
+
+
+def _default_registry_path(spec_path: Path) -> Path:
+    try:
+        repo_root = find_repo_root(spec_path)
+    except FileNotFoundError:
+        repo_root = find_repo_root()
+    return (repo_root / "datasets" / "registry.yaml").resolve()

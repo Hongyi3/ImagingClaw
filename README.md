@@ -16,10 +16,12 @@ and paper-grade open research software.
 - A `CLAUDE.md`-style routing file
 - A machine-readable `skills/catalog.json`
 - Imaging-specific `SKILL.md` templates
-- Starter skills for CT, MRI, phase retrieval, benchmarking, reproducibility export, and
-  paper figure regeneration
+- Prototype CT and MRI smoke baselines with deterministic reports and artifact bundles
+- Starter skills for phase retrieval, benchmarking, reproducibility export, and paper figure
+  regeneration
 - A minimal Python package with a working CLI, registry loader, router, and artifact-bundle
   helper
+- Declared experiment examples under `experiments/specs/`
 - CI, governance, contribution, security, citation, and release metadata scaffolding
 - `paper/`, `benchmarks/`, `datasets/`, and `codex/` directories ready for incremental buildout
 
@@ -37,6 +39,20 @@ python -m src.clawimaging.cli list
 ```
 
 5. Open Codex in this directory and follow `codex/README.md`
+
+## CLI quick checks
+
+The core CLI is intentionally small and scriptable:
+
+```bash
+clawimaging list
+clawimaging list --json
+clawimaging show-skill bench
+clawimaging route "benchmark compare methods" --explain
+```
+
+`list --json` emits the registry-backed skill catalog as JSON, and `route --explain` returns the
+selected skill together with the routing score and matched trigger keywords.
 
 ## Design thesis
 
@@ -68,6 +84,7 @@ clawimaging_prework/
 ├── AGENTS.md
 ├── BLUEPRINT.md
 ├── PROJECT-CHARTER.md
+├── experiments/
 ├── codex/
 ├── docs/
 ├── skills/
@@ -80,6 +97,6 @@ clawimaging_prework/
 
 ## Status
 
-This repository is a professional scaffold, not a finished platform. It is designed so a coding
-agent can turn it into a serious open-source project milestone by milestone without first having
-to invent the project structure.
+This repository is still a staged buildout rather than a finished platform, but the CT and MRI
+Phase 2 smoke workflows now execute end to end with deterministic synthetic data, structured
+reports, and benchmark-dispatch support.

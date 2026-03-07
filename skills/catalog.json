@@ -14,7 +14,9 @@
       "has_tests": false,
       "has_demo": true,
       "demo_command": "python skills/benchmark-run/benchmark_run.py --demo --output /tmp/benchmark-run-demo",
-      "dependencies": [],
+      "dependencies": [
+        "numpy"
+      ],
       "tags": [],
       "trigger_keywords": [
         "benchmark",
@@ -35,7 +37,7 @@
       "cli_alias": "ct",
       "description": "Reconstruct low-dose CT or tomography measurements with declared geometry, baselines, and artifact bundles.",
       "version": "0.1.0",
-      "status": "scaffold",
+      "status": "prototype",
       "modality": "ct",
       "measurement_domain": "sinogram",
       "forward_model": "x-ray-transform",
@@ -43,7 +45,9 @@
       "has_tests": false,
       "has_demo": true,
       "demo_command": "python skills/ct-recon/ct_recon.py --demo --output /tmp/ct-recon-demo",
-      "dependencies": [],
+      "dependencies": [
+        "numpy"
+      ],
       "tags": [],
       "trigger_keywords": [
         "ct reconstruction",
@@ -62,7 +66,7 @@
       "cli_alias": "mri",
       "description": "Reconstruct raw k-space MRI measurements with declared coil handling, baselines, and artifact bundles.",
       "version": "0.1.0",
-      "status": "scaffold",
+      "status": "prototype",
       "modality": "mri",
       "measurement_domain": "k-space",
       "forward_model": "fourier-encoding",
@@ -70,7 +74,9 @@
       "has_tests": false,
       "has_demo": true,
       "demo_command": "python skills/mri-recon/mri_recon.py --demo --output /tmp/mri-recon-demo",
-      "dependencies": [],
+      "dependencies": [
+        "numpy"
+      ],
       "tags": [],
       "trigger_keywords": [
         "mri reconstruction",

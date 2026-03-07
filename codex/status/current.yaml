@@ -1,0 +1,42 @@
+project_name: ClawImaging
+current_stage: "Milestone 3 — Coherent imaging, publication, and release"
+current_phase_file: codex/PHASE-3.md
+last_completed_milestone: "Milestone 2 — CT and MRI"
+next_milestone: "Milestone 3 — Coherent imaging, publication, and release"
+next_phase_file: codex/PHASE-3.md
+status: ready
+acceptance_criteria_status:
+  source: codex/PHASE-3.md
+  overall: pending
+  items:
+    - criterion: phase retrieval skill is usable in beta mode
+      status: pending
+    - criterion: paper figure regeneration is scriptable
+      status: pending
+    - criterion: release checklist is actionable
+      status: pending
+    - criterion: the repository is close to software-paper submission quality
+      status: pending
+blockers: []
+risks:
+  - Milestone numbers come from BLUEPRINT.md while phase numbers come from codex/ work packets; execute the next_phase_file named here even when the numbering does not match.
+last_validation:
+  ran_at: "2026-03-07T01:50:25-08:00"
+  overall_status: passed
+  summary: Phase 2 validation passed using python3 because python is unavailable on PATH. Deterministic CT and MRI smoke baselines now emit structured artifact bundles, benchmark-run dispatches both analytic workflows with honest proxy-data reporting, and the repository is ready to advance from codex/PHASE-2.md to codex/PHASE-3.md.
+  commands:
+    - command: python3 scripts/generate_catalog.py
+      result: passed
+      details: Used python3 because python is unavailable on PATH. skills/catalog.json was regenerated with updated CT, MRI, and benchmark skill metadata.
+    - command: python3 -m pytest
+      result: passed
+      details: Used python3 because python is unavailable on PATH. 50 tests passed, covering CT and MRI demos, declared configs, benchmark dispatch, metrics, datasets, artifacts, and CLI behavior.
+    - command: python3 -m src.clawimaging.cli list
+      result: passed
+      details: Used python3 because python is unavailable on PATH. The CLI listed all six registered skills.
+    - command: ruff check .
+      result: passed
+    - command: python3 -m mypy src
+      result: passed
+      details: Used python3 because python is unavailable on PATH. Source typing checks passed for the Phase 2 workflow, config, metrics, and benchmark dispatch modules.
+last_updated: "2026-03-07T01:50:25-08:00"

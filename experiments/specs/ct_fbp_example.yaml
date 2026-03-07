@@ -1,0 +1,60 @@
+experiment:
+  experiment_id: ct-example-fbp
+  title: Example CT FBP declared run
+  modality: ct
+  task: synthetic-ct-reconstruction
+  dataset:
+    name: ct-demo-phantoms
+    version: "0.1"
+    split: synthetic-example
+    access: open
+  forward_model:
+    operator: x-ray-transform
+    geometry: parallel-beam
+    noise_model: poisson-count-proxy
+  method: fbp
+  metrics:
+    - psnr
+    - ssim
+    - nrmse
+  seed: 23
+  hardware:
+    reference_device: cpu
+  notes:
+    - Example declared CT smoke run using repository-local synthetic data.
+input:
+  measurement_path: ../data/ct_measurement.npy
+  reference_path: ../data/ct_reference.npy
+  provenance:
+    data_kind: synthetic-measurements
+    measurement_domain: sinogram
+    source: Repository-local synthetic CT sinogram for declared smoke runs.
+acquisition:
+  angles_degrees:
+    - 0.0
+    - 7.5
+    - 15.0
+    - 22.5
+    - 30.0
+    - 37.5
+    - 45.0
+    - 52.5
+    - 60.0
+    - 67.5
+    - 75.0
+    - 82.5
+    - 90.0
+    - 97.5
+    - 105.0
+    - 112.5
+    - 120.0
+    - 127.5
+    - 135.0
+    - 142.5
+    - 150.0
+    - 157.5
+    - 165.0
+    - 172.5
+method_config:
+  filter: ramp
+  clip_min: 0.0

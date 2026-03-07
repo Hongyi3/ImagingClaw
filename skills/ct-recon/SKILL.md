@@ -4,7 +4,7 @@ cli_alias: ct
 description: Reconstruct low-dose CT or tomography measurements with declared geometry,
   baselines, and artifact bundles.
 version: 0.1.0
-status: scaffold
+status: prototype
 modality: ct
 measurement_domain: sinogram
 forward_model: x-ray-transform
@@ -21,7 +21,8 @@ chaining_partners:
 - paper-figure
 install:
   kind: pip
-  packages: []
+  packages:
+  - numpy
   bins: []
 ---
 
@@ -38,31 +39,34 @@ reproducible reconstruction reports.
 ## Core capabilities
 
 1. Validate CT measurement metadata and geometry assumptions
-2. Run analytic, iterative, or learned baseline workflows
-3. Emit comparable metrics and a publication-friendly artifact bundle
+2. Run the Phase 2 analytic FBP baseline on deterministic synthetic smoke data or declared sinogram inputs
+3. Emit comparable metrics, provenance tables, and a publication-friendly artifact bundle
 
 ## Inputs
 
 Preferred inputs:
 
 - sinogram arrays (`.npy`, `.npz`, `.h5`)
+- declared experiment configs (`.yaml`)
 - geometry metadata (JSON / YAML)
 - optional benchmark spec
 
 ## Workflow
 
-1. Validate input paths and geometry metadata
-2. Record whether data are raw, simulated, or preprocessed
-3. Select a reconstruction path (e.g., FBP, TV, learned baseline)
-4. Write metrics, report, and reproducibility artifacts
+1. Validate declared geometry and provenance metadata
+2. Load deterministic demo data, a declared config, or a self-describing `.npz`
+3. Run the analytic FBP baseline and compute reportable image metrics
+4. Write metrics, tables, report sections, and reproducibility artifacts through the artifact layer
 
 ## Methodology
 
 For each run, the skill must make geometry assumptions explicit and separate method selection from
-report generation.
+report generation. Phase 2 supports the analytic `fbp` baseline only; iterative and learned CT
+baselines remain future work.
 
 ## Safety and provenance
 
 - Never claim a reconstruction is raw-data-based if measurements were derived from images
 - Warn when geometry or dose assumptions are missing
 - Do not hardcode benchmark paths
+- Plain `.npy` inputs require declared config metadata; do not assume geometry defaults

@@ -1,0 +1,38 @@
+experiment:
+  experiment_id: mri-example-rss-zero-fill
+  title: Example MRI zero-filled RSS declared run
+  modality: mri
+  task: synthetic-mri-reconstruction
+  dataset:
+    name: mri-demo-kspace
+    version: "0.1"
+    split: synthetic-example
+    access: open
+  forward_model:
+    operator: fourier-encoding
+    geometry: cartesian
+    noise_model: acquisition-native
+  method: rss-zero-fill
+  metrics:
+    - nmse
+    - psnr
+    - ssim
+  seed: 29
+  hardware:
+    reference_device: cpu
+  notes:
+    - Example declared MRI smoke run using repository-local synthetic data.
+input:
+  measurement_path: ../data/mri_measurement.npy
+  reference_path: ../data/mri_reference.npy
+  provenance:
+    data_kind: synthetic-measurements
+    measurement_domain: k-space
+    source: Repository-local synthetic undersampled MRI k-space for declared smoke runs.
+acquisition:
+  sampling_mask_path: ../data/mri_sampling_mask.npy
+  coil_count: 4
+  coil_combination: rss
+method_config:
+  coil_combination: rss
+  transform: ifft2c

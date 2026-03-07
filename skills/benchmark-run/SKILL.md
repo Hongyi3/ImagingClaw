@@ -23,7 +23,8 @@ chaining_partners:
 - paper-figure
 install:
   kind: pip
-  packages: []
+  packages:
+  - numpy
   bins: []
 ---
 
@@ -40,7 +41,7 @@ benchmark execution around machine-readable specs and dataset-registry-backed pr
 
 1. Load and validate benchmark specs
 2. Resolve benchmark dataset references against the dataset registry
-3. Emit a resolved benchmark manifest and reproducibility bundle
+3. Dispatch the supported Phase 2 analytic CT or MRI baseline into a nested child artifact bundle
 
 ## Inputs
 
@@ -52,14 +53,15 @@ benchmark execution around machine-readable specs and dataset-registry-backed pr
 
 1. Validate the benchmark spec schema and required baseline classes
 2. Resolve dataset metadata from `datasets/registry.yaml`
-3. Emit `resolved_config.yaml`, `metrics.json`, and reproducibility files through the artifact layer
-4. Leave modality-specific execution to later phases
+3. Select the supported Phase 2 analytic method for CT (`fbp`) or MRI (`rss-zero-fill`)
+4. Emit `resolved_config.yaml`, `metrics.json`, reproducibility files, and a nested child bundle through the artifact layer
 
 ## Outputs
 
 - resolved benchmark manifest in `resolved_config.yaml`
 - benchmark summary and environment digest in `metrics.json`
-- report sections for benchmark metadata, dataset provenance, methods, metrics, and reproducibility
+- nested child run bundle under `runs/<skill>-<method>`
+- report sections for benchmark metadata, dataset provenance, methods, executed reconstruction, metrics, and reproducibility
 
 ## Safety and provenance
 
@@ -67,3 +69,4 @@ benchmark execution around machine-readable specs and dataset-registry-backed pr
 - No silent omission of baselines from the report
 - No benchmark dataset reference without a matching registry entry
 - Never hide whether the benchmark data are raw, processed, or synthetic
+- When upstream benchmark measurements are not present locally, mark the executed child run as a synthetic proxy explicitly

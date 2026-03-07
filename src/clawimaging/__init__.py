@@ -4,6 +4,8 @@ __all__ = [
     "benchmarks",
     "cli",
     "datasets",
+    "experiments",
+    "metrics",
     "orchestrator",
     "paths",
     "registry",

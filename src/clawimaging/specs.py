@@ -27,10 +27,27 @@ def _require_fields(data: Mapping[str, Any], *, context: str, fields: tuple[str,
         raise ValueError(f"{context} missing required fields: {missing_fields}")
 
 
+def _as_non_empty_string(value: Any, *, context: str) -> str:
+    text = str(value).strip()
+    if not text:
+        raise ValueError(f"{context} must not be blank")
+    return text
+
+
 def _as_string_list(values: Any, *, context: str) -> list[str]:
     if not isinstance(values, list):
         raise ValueError(f"{context} must be a list")
-    return [str(value) for value in values]
+    result: list[str] = []
+    for index, value in enumerate(values):
+        result.append(_as_non_empty_string(value, context=f"{context}[{index}]"))
+    return result
+
+
+def _as_int(value: Any, *, context: str) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{context} must be an integer") from exc
 
 
 def _validate_non_empty_list(values: list[str], *, context: str) -> list[str]:
@@ -60,9 +77,9 @@ class DatasetRef:
             allowed = ", ".join(sorted(ALLOWED_DATASET_ACCESS))
             raise ValueError(f"DatasetRef access must be one of: {allowed}")
         return cls(
-            name=str(payload["name"]),
-            version=str(payload["version"]),
-            split=str(payload["split"]),
+            name=_as_non_empty_string(payload["name"], context="DatasetRef.name"),
+            version=_as_non_empty_string(payload["version"], context="DatasetRef.version"),
+            split=_as_non_empty_string(payload["split"], context="DatasetRef.split"),
             access=access,
             notes=_as_string_list(payload.get("notes", []), context="DatasetRef.notes"),
         )
@@ -118,21 +135,30 @@ class DatasetEntry:
             allowed = ", ".join(sorted(ALLOWED_DATASET_ACCESS))
             raise ValueError(f"DatasetEntry access must be one of: {allowed}")
         return cls(
-            name=str(payload["name"]),
-            version=str(payload["version"]),
-            modality=str(payload["modality"]),
-            measurement_domain=str(payload["measurement_domain"]),
+            name=_as_non_empty_string(payload["name"], context="DatasetEntry.name"),
+            version=_as_non_empty_string(payload["version"], context="DatasetEntry.version"),
+            modality=_as_non_empty_string(payload["modality"], context="DatasetEntry.modality"),
+            measurement_domain=_as_non_empty_string(
+                payload["measurement_domain"],
+                context="DatasetEntry.measurement_domain",
+            ),
             data_kind=data_kind,
             access=access,
-            source=str(payload["source"]),
-            redistribution_policy=str(payload["redistribution_policy"]),
-            license_or_terms=str(payload["license_or_terms"]),
+            source=_as_non_empty_string(payload["source"], context="DatasetEntry.source"),
+            redistribution_policy=_as_non_empty_string(
+                payload["redistribution_policy"],
+                context="DatasetEntry.redistribution_policy",
+            ),
+            license_or_terms=_as_non_empty_string(
+                payload["license_or_terms"],
+                context="DatasetEntry.license_or_terms",
+            ),
             labels=_as_string_list(payload["labels"], context="DatasetEntry.labels"),
             known_preprocessing_assumptions=_as_string_list(
                 payload["known_preprocessing_assumptions"],
                 context="DatasetEntry.known_preprocessing_assumptions",
             ),
-            card=str(payload["card"]),
+            card=_as_non_empty_string(payload["card"], context="DatasetEntry.card"),
             notes=_as_string_list(payload["notes"], context="DatasetEntry.notes"),
         )
 
@@ -155,9 +181,12 @@ class ForwardModelSpec:
             fields=("operator", "geometry", "noise_model"),
         )
         return cls(
-            operator=str(payload["operator"]),
-            geometry=str(payload["geometry"]),
-            noise_model=str(payload["noise_model"]),
+            operator=_as_non_empty_string(payload["operator"], context="ForwardModelSpec.operator"),
+            geometry=_as_non_empty_string(payload["geometry"], context="ForwardModelSpec.geometry"),
+            noise_model=_as_non_empty_string(
+                payload["noise_model"],
+                context="ForwardModelSpec.noise_model",
+            ),
         )
 
     def to_dict(self) -> dict[str, Any]:
@@ -175,8 +204,8 @@ class MethodSpec:
         payload = _as_mapping(data, context="MethodSpec")
         _require_fields(payload, context="MethodSpec", fields=("name", "class"))
         return cls(
-            name=str(payload["name"]),
-            method_class=str(payload["class"]),
+            name=_as_non_empty_string(payload["name"], context="MethodSpec.name"),
+            method_class=_as_non_empty_string(payload["class"], context="MethodSpec.class"),
             config=_as_mapping(payload.get("config", {}), context="MethodSpec.config"),
         )
 
@@ -219,24 +248,39 @@ class ExperimentSpec:
             ),
         )
         return cls(
-            experiment_id=str(payload["experiment_id"]),
-            title=str(payload["title"]),
-            modality=str(payload["modality"]),
-            task=str(payload["task"]),
+            experiment_id=_as_non_empty_string(
+                payload["experiment_id"],
+                context="ExperimentSpec.experiment_id",
+            ),
+            title=_as_non_empty_string(payload["title"], context="ExperimentSpec.title"),
+            modality=_as_non_empty_string(payload["modality"], context="ExperimentSpec.modality"),
+            task=_as_non_empty_string(payload["task"], context="ExperimentSpec.task"),
             dataset=DatasetRef.from_dict(payload["dataset"]),
             forward_model=ForwardModelSpec.from_dict(payload["forward_model"]),
-            method=str(payload["method"]),
+            method=_as_non_empty_string(payload["method"], context="ExperimentSpec.method"),
             metrics=_validate_non_empty_list(
                 _as_string_list(payload["metrics"], context="ExperimentSpec.metrics"),
                 context="ExperimentSpec.metrics",
             ),
-            seed=int(payload["seed"]),
+            seed=_as_int(payload["seed"], context="ExperimentSpec.seed"),
             hardware=_as_mapping(payload.get("hardware", {}), context="ExperimentSpec.hardware"),
             notes=_as_string_list(payload.get("notes", []), context="ExperimentSpec.notes"),
         )
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+    def validate_against_dataset(self, dataset_entry: DatasetEntry) -> None:
+        if dataset_entry.modality != self.modality:
+            raise ValueError(
+                "ExperimentSpec modality does not match dataset registry entry: "
+                f"{self.modality} != {dataset_entry.modality}"
+            )
+        if dataset_entry.access != self.dataset.access:
+            raise ValueError(
+                "ExperimentSpec dataset access does not match dataset registry entry: "
+                f"{self.dataset.access} != {dataset_entry.access}"
+            )
 
 
 @dataclass
@@ -288,10 +332,10 @@ class BenchmarkSpec:
         environment = _as_mapping(payload["environment"], context="BenchmarkSpec.environment")
         notes = _as_mapping(payload.get("notes", {}), context="BenchmarkSpec.notes")
         benchmark = cls(
-            name=str(payload["name"]),
-            version=str(payload["version"]),
-            modality=str(payload["modality"]),
-            task=str(payload["task"]),
+            name=_as_non_empty_string(payload["name"], context="BenchmarkSpec.name"),
+            version=_as_non_empty_string(payload["version"], context="BenchmarkSpec.version"),
+            modality=_as_non_empty_string(payload["modality"], context="BenchmarkSpec.modality"),
+            task=_as_non_empty_string(payload["task"], context="BenchmarkSpec.task"),
             dataset=DatasetRef.from_dict(payload["dataset"]),
             forward_model=ForwardModelSpec.from_dict(payload["forward_model"]),
             preprocessing=_validate_non_empty_list(
@@ -310,7 +354,13 @@ class BenchmarkSpec:
                 _as_string_list(payload["metrics"], context="BenchmarkSpec.metrics"),
                 context="BenchmarkSpec.metrics",
             ),
-            seeds={str(key): int(value) for key, value in seeds.items()},
+            seeds={
+                _as_non_empty_string(key, context="BenchmarkSpec.seeds key"): _as_int(
+                    value,
+                    context=f"BenchmarkSpec.seeds[{key}]",
+                )
+                for key, value in seeds.items()
+            },
             hardware=hardware,
             environment=environment,
             notes=notes,
@@ -321,6 +371,23 @@ class BenchmarkSpec:
     def validate(self) -> None:
         if not self.seeds:
             raise ValueError("BenchmarkSpec.seeds must not be empty")
+        unknown_classes = {method.method_class for method in self.methods}
+        unsupported_classes = unknown_classes - REQUIRED_BASELINE_CLASSES
+        if unsupported_classes:
+            unsupported = ", ".join(sorted(unsupported_classes))
+            raise ValueError(f"BenchmarkSpec.methods contain unsupported classes: {unsupported}")
+        method_names: dict[str, str] = {}
+        duplicate_names: set[str] = set()
+        for method in self.methods:
+            normalized_name = method.name.lower()
+            if normalized_name in method_names:
+                duplicate_names.add(method.name)
+                duplicate_names.add(method_names[normalized_name])
+                continue
+            method_names[normalized_name] = method.name
+        if duplicate_names:
+            duplicates = ", ".join(sorted(duplicate_names, key=str.lower))
+            raise ValueError(f"BenchmarkSpec.methods contain duplicate method names: {duplicates}")
         baseline_classes = {method.method_class for method in self.methods}
         missing_classes = REQUIRED_BASELINE_CLASSES - baseline_classes
         if missing_classes:

@@ -15,7 +15,11 @@ clawimaging_prework/
 │   ├── PHASE-1.md
 │   ├── PHASE-2.md
 │   ├── PHASE-3.md
-│   └── README.md
+│   ├── README.md
+│   └── status
+│       ├── MILESTONE_LOG.md
+│       ├── NEXT_MILESTONE.md
+│       └── current.yaml
 ├── datasets
 │   ├── README.md
 │   └── registry.yaml

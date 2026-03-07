@@ -22,22 +22,38 @@ If you are editing under `skills/`, also read `skills/AGENTS.override.md`.
 
 ## Working rules
 
-1. Preserve the architecture:
+1. After loading the root policy docs and before substantive work, read
+   `codex/status/current.yaml` and `codex/status/NEXT_MILESTONE.md`.
+
+2. Unless the user explicitly overrides it, execute only the `next_milestone` and
+   `next_phase_file` named in the status files. The status files choose the active work packet;
+   policy docs and phase files define how the work must be done.
+
+3. When a milestone is materially advanced or completed, update `codex/status/current.yaml`,
+   rewrite `codex/status/NEXT_MILESTONE.md`, and append to `codex/status/MILESTONE_LOG.md` in
+   the same change.
+
+4. After completing any user-requested change that modifies repo-tracked files, Codex must create
+   a task-scoped commit and push the current branch to GitHub before reporting completion. Push
+   only the changes for the current task. If unrelated local changes would be included, or if the
+   push fails, stop and report the blocker instead of claiming the task is finished.
+
+5. Preserve the architecture:
    - orchestrator routes
    - skills own domain workflows
    - adapters wrap external backends
    - bundle helpers own artifact creation
 
-2. Never put modality-specific physics in the orchestrator.
+6. Never put modality-specific physics in the orchestrator.
 
-3. Treat `SKILL.md` as the methodology contract. If implementation changes capability, input,
+7. Treat `SKILL.md` as the methodology contract. If implementation changes capability, input,
    output, routing, or safety behavior, update `SKILL.md` in the same change.
 
-4. Prefer adapter wrappers over re-implementing complex domain libraries.
+8. Prefer adapter wrappers over re-implementing complex domain libraries.
 
-5. Keep the CLI stable unless a task explicitly changes it.
+9. Keep the CLI stable unless a task explicitly changes it.
 
-6. Benchmark work must encode:
+10. Benchmark work must encode:
    - dataset version
    - preprocessing
    - forward model
@@ -47,9 +63,9 @@ If you are editing under `skills/`, also read `skills/AGENTS.override.md`.
    - hardware
    - environment digest
 
-7. Raw-measurement provenance is mandatory. Do not silently treat processed images as raw data.
+11. Raw-measurement provenance is mandatory. Do not silently treat processed images as raw data.
 
-8. All serious outputs should flow through the artifact-bundle utilities.
+12. All serious outputs should flow through the artifact-bundle utilities.
 
 ## Commands to run after meaningful changes
 
