@@ -36,10 +36,10 @@ def test_benchmark_run_dispatches_ct_child_bundle(tmp_path: Path) -> None:
     metrics = json.loads((output_dir / "metrics.json").read_text(encoding="utf-8"))
     report = (output_dir / "report.md").read_text(encoding="utf-8")
 
-    assert manifest["execution"]["selected_phase2_method"] == "fbp"
+    assert manifest["execution"]["selected_method"] == "fbp"
     assert manifest["execution"]["child_bundle"] == "runs/ct-recon-fbp"
     assert metrics["status"] == "completed"
-    assert metrics["benchmark"]["selected_phase2_method"] == "fbp"
+    assert metrics["benchmark"]["selected_method"] == "fbp"
     assert metrics["benchmark"]["dataset"]["executed_data_kind"] == "synthetic-measurements"
     assert "psnr" in metrics["child_run"]["metrics"]
     assert "## Executed Reconstruction" in report
@@ -58,11 +58,31 @@ def test_benchmark_run_dispatches_mri_child_bundle(tmp_path: Path) -> None:
     metrics = json.loads((output_dir / "metrics.json").read_text(encoding="utf-8"))
     report = (output_dir / "report.md").read_text(encoding="utf-8")
 
-    assert metrics["benchmark"]["selected_phase2_method"] == "rss-zero-fill"
+    assert metrics["benchmark"]["selected_method"] == "rss-zero-fill"
     assert metrics["benchmark"]["child_bundle"] == "runs/mri-recon-rss-zero-fill"
     assert metrics["child_run"]["proxy_for_benchmark"] is True
     assert "nmse" in metrics["child_run"]["metrics"]
     assert "Upstream benchmark measurements were not executed directly" in report
+
+
+def test_benchmark_run_dispatches_phase_child_bundle(tmp_path: Path) -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    output_dir = tmp_path / "bundle"
+    _run_benchmark(repo_root / "benchmarks" / "specs" / "phase_retrieval_synthetic.yaml", output_dir)
+
+    validate_artifact_bundle(output_dir)
+    validate_artifact_bundle(output_dir / "runs" / "phase-retrieve-gerchberg-saxton")
+
+    metrics = json.loads((output_dir / "metrics.json").read_text(encoding="utf-8"))
+    report = (output_dir / "report.md").read_text(encoding="utf-8")
+
+    assert metrics["benchmark"]["selected_method"] == "gerchberg-saxton"
+    assert metrics["benchmark"]["child_bundle"] == "runs/phase-retrieve-gerchberg-saxton"
+    assert metrics["benchmark"]["proxy_for_benchmark"] is False
+    assert metrics["child_run"]["proxy_for_benchmark"] is False
+    assert "relative-error" in metrics["child_run"]["metrics"]
+    assert "Proxy for benchmark protocol: `false`" in report
+    assert "executed directly against repository-local synthetic measurements" in report
 
 
 def test_benchmark_run_rejects_missing_supported_method(tmp_path: Path) -> None:
@@ -118,4 +138,4 @@ def test_benchmark_run_rejects_missing_supported_method(tmp_path: Path) -> None:
     )
 
     assert result.returncode != 0
-    assert "does not include the required Phase 2 method" in result.stderr
+    assert "does not include the required supported method" in result.stderr

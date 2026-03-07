@@ -8,6 +8,7 @@ __all__ = [
     "metrics",
     "orchestrator",
     "paths",
+    "release_audit",
     "registry",
     "specs",
 ]

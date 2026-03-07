@@ -40,6 +40,14 @@ def nrmse(reference: np.ndarray, estimate: np.ndarray) -> float:
     return float(np.sqrt(nmse(reference, estimate)))
 
 
+def relative_error(reference: np.ndarray, estimate: np.ndarray) -> float:
+    reference_array, estimate_array = _validate_image_pair(reference, estimate)
+    denominator = float(np.linalg.norm(reference_array))
+    if denominator == 0.0:
+        raise ValueError("Relative error is undefined for an all-zero reference image")
+    return float(np.linalg.norm(estimate_array - reference_array) / denominator)
+
+
 def psnr(reference: np.ndarray, estimate: np.ndarray) -> float:
     reference_array, estimate_array = _validate_image_pair(reference, estimate)
     mse = float(np.mean((estimate_array - reference_array) ** 2))
@@ -95,6 +103,7 @@ def ssim(reference: np.ndarray, estimate: np.ndarray) -> float:
 METRICS: dict[str, MetricFunction] = {
     "nmse": nmse,
     "nrmse": nrmse,
+    "relative-error": relative_error,
     "psnr": psnr,
     "ssim": ssim,
 }

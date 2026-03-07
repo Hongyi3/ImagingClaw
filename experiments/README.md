@@ -6,6 +6,9 @@ This directory holds small declared run specifications used for smoke validation
   synthetic sinogram data.
 - `specs/mri_zero_fill_example.yaml` runs the deterministic MRI zero-filled RSS workflow against
   repository-local synthetic undersampled k-space.
+- `specs/phase_gs_example.yaml` runs the deterministic coherent-imaging Gerchberg-Saxton workflow
+  against repository-local synthetic Fourier-magnitude data.
 
 These files are intentionally small and synthetic. They do not represent benchmark claims about
-LoDoPaB-CT, fastMRI, or any other upstream dataset.
+LoDoPaB-CT, fastMRI, synthetic-phase-objects benchmark claims beyond smoke validation, or any
+other upstream dataset.

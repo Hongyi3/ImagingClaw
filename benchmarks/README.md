@@ -21,3 +21,7 @@ resolved benchmark manifest in the artifact bundle.
 Phase 2 extends this by dispatching the supported analytic CT or MRI baseline into a nested child
 bundle while explicitly marking synthetic proxy execution when upstream benchmark measurements are
 not present locally.
+
+Phase 3 adds direct coherent-imaging dispatch for the repository-local synthetic phase-retrieval
+benchmark, so the emitted bundle distinguishes between synthetic proxy execution and synthetic
+benchmark protocols that are executed directly.

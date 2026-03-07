@@ -52,3 +52,20 @@ Entries are append-only. Add new entries at the end and do not rewrite prior ent
   - Validation used `python3` because `python` is unavailable on PATH in this environment.
   - `python3 -m pytest` passed with 50 tests, including CT/MRI demo, config, and benchmark
     dispatch coverage.
+
+- Transition: Completed Phase 3 — Coherent imaging, publication, and release, and designated
+  Milestone 5 — v1.0 as the next milestone with no further Codex work packet defined yet.
+- Status: `phase-retrieve` now runs a beta Gerchberg-Saxton workflow with direct coherent-imaging
+  benchmark dispatch, `paper-figure` regenerates manuscript assets from validated bundles,
+  `repro-export` emits audit bundles without mutating source runs, and release readiness now has a
+  machine-checkable audit script.
+- Validation: `python3 scripts/generate_catalog.py`, `python3 -m pytest`,
+  `python3 -m src.clawimaging.cli list`, `ruff check .`, and `python3 -m mypy src` all passed.
+- Notes:
+  - Validation used `python3` because `python` is unavailable on PATH in this environment.
+  - `python3 -m pytest` passed with 61 tests, including coherent-imaging, paper, and release audit
+    coverage.
+  - `python3 scripts/check_release_readiness.py` completed with warnings because root release
+    metadata files still contain placeholder values.
+  - Milestone 5 currently has no `codex/PHASE-*.md` work packet; define one before further
+    milestone execution.

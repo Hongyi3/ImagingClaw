@@ -4,7 +4,7 @@ cli_alias: paperfig
 description: Regenerate manuscript figures and tables directly from artifact bundles
   and benchmark specs.
 version: 0.1.0
-status: scaffold
+status: prototype
 modality: cross-cutting
 measurement_domain: n/a
 forward_model: artifact-to-paper
@@ -20,7 +20,8 @@ chaining_partners:
 - repro-export
 install:
   kind: pip
-  packages: []
+  packages:
+  - numpy
   bins: []
 ---
 
@@ -36,21 +37,20 @@ paper artifacts to benchmark outputs.
 ## Core capabilities
 
 1. Resolve figure requests to artifact sources
-2. Regenerate tables and plots from structured outputs
-3. Record provenance linking manuscript assets to run IDs
+2. Regenerate manuscript preview assets and metrics tables from structured bundle outputs
+3. Record provenance linking manuscript assets to run IDs and source bundle files
 
 ## Inputs
 
 - artifact bundle path
-- figure specification or manuscript target
-- optional style config
+- optional manuscript-target conventions encoded in the script entrypoint
 
 ## Workflow
 
 1. Resolve figure request
-2. Load structured metrics and tables
-3. Regenerate asset
-4. Write provenance note
+2. Load structured metrics and reconstruction-like arrays
+3. Regenerate a normalized preview and manuscript metrics table
+4. Write a provenance manifest
 
 ## Safety and provenance
 

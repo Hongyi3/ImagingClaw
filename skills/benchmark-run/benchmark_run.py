@@ -15,7 +15,7 @@ def _bootstrap_core() -> tuple[
     object,
     object,
     dict[str, Callable[..., object]],
-    dict[str, tuple[str, str]],
+    dict[str, dict[str, object]],
     dict[str, object],
 ]:
     src_dir = ROOT / "src"
@@ -29,10 +29,12 @@ def _bootstrap_core() -> tuple[
         format_bullets,
         render_analysis_log,
         render_commands,
+        stringify_paths,
         write_tsv,
     )
     from clawimaging.skill_workflows.ct import run_ct_reconstruction
     from clawimaging.skill_workflows.mri import run_mri_reconstruction
+    from clawimaging.skill_workflows.phase import run_phase_retrieval
 
     return (
         init_artifact_bundle,
@@ -41,16 +43,34 @@ def _bootstrap_core() -> tuple[
         {
             "ct": run_ct_reconstruction,
             "mri": run_mri_reconstruction,
+            "coherent-imaging": run_phase_retrieval,
         },
         {
-            "ct": ("fbp", "ct-recon"),
-            "mri": ("rss-zero-fill", "mri-recon"),
+            "ct": {
+                "method": "fbp",
+                "skill": "ct-recon",
+                "proxy_for_benchmark": True,
+                "executed_data_kind": "synthetic-measurements",
+            },
+            "mri": {
+                "method": "rss-zero-fill",
+                "skill": "mri-recon",
+                "proxy_for_benchmark": True,
+                "executed_data_kind": "synthetic-measurements",
+            },
+            "coherent-imaging": {
+                "method": "gerchberg-saxton",
+                "skill": "phase-retrieve",
+                "proxy_for_benchmark": False,
+                "executed_data_kind": "synthetic-measurements",
+            },
         },
         {
             "finalize_bundle": finalize_bundle,
             "format_bullets": format_bullets,
             "render_analysis_log": render_analysis_log,
             "render_commands": render_commands,
+            "stringify_paths": stringify_paths,
             "write_tsv": write_tsv,
         },
     )
@@ -76,6 +96,8 @@ def _report_sections(
     child_skill: str,
     child_method: str,
     child_metrics: dict[str, float],
+    executed_data_kind: str,
+    proxy_for_benchmark: bool,
     format_bullets: Callable[[list[str]], str],
 ) -> list[tuple[str, str]]:
     dataset = dict(manifest["dataset"])
@@ -105,8 +127,8 @@ def _report_sections(
                     f"- Access: `{dataset['access']}`",
                     f"- Measurement domain: `{dataset_entry['measurement_domain']}`",
                     f"- Protocol data kind: `{dataset_entry['data_kind']}`",
-                    "- Executed data kind: `synthetic-measurements`",
-                    "- Proxy for benchmark protocol: `true`",
+                    f"- Executed data kind: `{executed_data_kind}`",
+                    f"- Proxy for benchmark protocol: `{str(proxy_for_benchmark).lower()}`",
                     f"- Source: {dataset_entry['source']}",
                     f"- Redistribution policy: {dataset_entry['redistribution_policy']}",
                     f"- Card: `{dataset_entry['card']}`",
@@ -151,7 +173,12 @@ def _report_sections(
                 [
                     f"- Dataset registry path: `{manifest['source_paths']['dataset_registry']}`",
                     f"- Environment digest: `{environment_digest}`",
-                    "- Upstream benchmark measurements were not executed directly in this Phase 2 smoke run.",
+                    (
+                        "- Upstream benchmark measurements were not executed directly in this "
+                        "smoke run."
+                        if proxy_for_benchmark
+                        else "- The benchmark executed directly against repository-local synthetic measurements."
+                    ),
                     f"- Hardware notes: {hardware}",
                     f"- Environment snapshot: {environment}",
                 ]
@@ -183,9 +210,11 @@ def main() -> None:
     manifest = resolve_benchmark_manifest(spec_path)
     modality = str(manifest["modality"])
     if modality not in workflow_map:
-        raise SystemExit(f"Phase 2 benchmark dispatch does not support modality: {modality}")
+        raise SystemExit(f"Benchmark dispatch does not support modality: {modality}")
 
-    expected_method_name, child_skill_name = supported_methods[modality]
+    execution_config = supported_methods[modality]
+    expected_method_name = str(execution_config["method"])
+    child_skill_name = str(execution_config["skill"])
     available_methods = [dict(method) for method in manifest["methods"]]
     selected_method = next(
         (method for method in available_methods if str(method["name"]).lower() == expected_method_name),
@@ -193,7 +222,7 @@ def main() -> None:
     )
     if selected_method is None:
         raise SystemExit(
-            f"Benchmark spec {manifest['name']} does not include the required Phase 2 method: "
+            f"Benchmark spec {manifest['name']} does not include the required supported method: "
             f"{expected_method_name}"
         )
 
@@ -220,8 +249,9 @@ def main() -> None:
                 "version": manifest["version"],
                 "task": manifest["task"],
             },
-            "selected_phase2_method": expected_method_name,
-            "executed_data_kind": "synthetic-measurements",
+            "selected_method": expected_method_name,
+            "executed_data_kind": execution_config["executed_data_kind"],
+            "proxy_for_benchmark": execution_config["proxy_for_benchmark"],
         },
         sort_keys=False,
     )
@@ -241,23 +271,23 @@ def main() -> None:
                 "split": manifest["dataset"]["split"],
                 "access": manifest["dataset"]["access"],
                 "protocol_data_kind": manifest["dataset"]["registry_entry"]["data_kind"],
-                "executed_data_kind": "synthetic-measurements",
+                "executed_data_kind": execution_config["executed_data_kind"],
             },
             "methods": [method["name"] for method in manifest["methods"]],
             "method_count": len(manifest["methods"]),
             "metrics": list(manifest["metrics"]),
             "metric_count": len(manifest["metrics"]),
-            "selected_phase2_method": expected_method_name,
+            "selected_method": expected_method_name,
             "child_bundle": str(child_output_dir.relative_to(output_dir)),
-            "proxy_for_benchmark": True,
+            "proxy_for_benchmark": execution_config["proxy_for_benchmark"],
         },
         "child_run": child_result.metrics,
         "environment_digest": environment_digest,
     }
     summary = (
         "Resolved and validated a declared benchmark manifest against the dataset registry, then "
-        "dispatched the supported Phase 2 analytic baseline into a nested child bundle using "
-        "deterministic synthetic proxy measurements."
+        "dispatched the supported baseline into a nested child bundle with explicit data-kind "
+        "and proxy reporting."
     )
     analysis_log = common_helpers["render_analysis_log"](
         [
@@ -267,7 +297,7 @@ def main() -> None:
                 f"Validated dataset reference `{manifest['dataset']['name']}@"
                 f"{manifest['dataset']['version']}` against registry metadata."
             ),
-            f"Selected Phase 2 method `{expected_method_name}` for modality `{modality}`.",
+            f"Selected supported method `{expected_method_name}` for modality `{modality}`.",
             f"Created child bundle at `runs/{child_skill_name}-{expected_method_name}`.",
             f"Computed environment digest `{environment_digest}` from `environment.yml`.",
         ]
@@ -275,11 +305,11 @@ def main() -> None:
     resolved_config = {
         "manifest": manifest,
         "execution": {
-            "selected_phase2_method": expected_method_name,
+            "selected_method": expected_method_name,
             "selected_skill": child_skill_name,
             "child_bundle": str(child_output_dir.relative_to(output_dir)),
-            "proxy_for_benchmark": True,
-            "executed_data_kind": "synthetic-measurements",
+            "proxy_for_benchmark": execution_config["proxy_for_benchmark"],
+            "executed_data_kind": execution_config["executed_data_kind"],
         },
         "child_run": child_result.resolved_config,
     }
@@ -290,7 +320,10 @@ def main() -> None:
         skill_name="benchmark-run",
         summary=summary,
         metrics=metrics,
-        config_yaml=yaml.safe_dump(resolved_config, sort_keys=False),
+        config_yaml=yaml.safe_dump(
+            common_helpers["stringify_paths"](resolved_config),
+            sort_keys=False,
+        ),
         report_sections=_report_sections(
             manifest,
             environment_digest=environment_digest,
@@ -298,6 +331,8 @@ def main() -> None:
             child_skill=child_skill_name,
             child_method=expected_method_name,
             child_metrics=child_result.metrics["metrics"],
+            executed_data_kind=str(execution_config["executed_data_kind"]),
+            proxy_for_benchmark=bool(execution_config["proxy_for_benchmark"]),
             format_bullets=common_helpers["format_bullets"],
         ),
         commands=common_helpers["render_commands"](reproduction_command),
@@ -310,9 +345,10 @@ def main() -> None:
         rows=[
             ["benchmark", manifest["name"]],
             ["modality", modality],
-            ["selected_phase2_method", expected_method_name],
+            ["selected_method", expected_method_name],
             ["child_bundle", str(child_output_dir.relative_to(output_dir))],
-            ["executed_data_kind", "synthetic-measurements"],
+            ["executed_data_kind", str(execution_config["executed_data_kind"])],
+            ["proxy_for_benchmark", str(execution_config["proxy_for_benchmark"]).lower()],
         ],
     )
     common_helpers["finalize_bundle"](output_dir)

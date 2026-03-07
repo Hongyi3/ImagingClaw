@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 import tempfile
 
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -22,7 +23,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", help="Source artifact bundle path")
     parser.add_argument("--output", required=True, help="Output directory")
-    parser.add_argument("--demo", action="store_true", help="Run the paper-figure demo")
+    parser.add_argument("--demo", action="store_true", help="Build demo paper assets")
     return parser
 
 
@@ -35,7 +36,7 @@ def main() -> None:
     output_dir = Path(args.output).resolve()
     source_bundle: Path
     if args.demo:
-        temp_root = Path(tempfile.mkdtemp(prefix="clawimaging-paperfig-"))
+        temp_root = Path(tempfile.mkdtemp(prefix="clawimaging-paper-script-"))
         source_bundle = temp_root / "phase-source"
         run_phase_retrieval(
             output_dir=source_bundle,
@@ -48,18 +49,17 @@ def main() -> None:
     else:
         source_bundle = Path(args.input).resolve()
 
-    reproduction_command = (
-        f"python3 skills/paper-figure/paper_figure.py"
-        f"{' --demo' if args.demo else ''}"
-        f"{f' --input {source_bundle}' if not args.demo else ''}"
-        f" --output {output_dir}"
-    )
     run_paper_figure(
         output_dir=output_dir,
         source_bundle=source_bundle,
-        reproduction_command=reproduction_command,
+        reproduction_command=(
+            f"python3 paper/scripts/regenerate_assets.py"
+            f"{' --demo' if args.demo else ''}"
+            f"{f' --input {source_bundle}' if not args.demo else ''}"
+            f" --output {output_dir}"
+        ),
     )
-    print(f"Wrote paper figure bundle to {args.output}")
+    print(f"Wrote paper assets bundle to {args.output}")
 
 
 if __name__ == "__main__":

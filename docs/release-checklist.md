@@ -2,6 +2,7 @@
 
 ## Before any public release
 
+- [ ] `python3 scripts/check_release_readiness.py` reviewed and warnings resolved
 - [ ] Root license finalized
 - [ ] `CITATION.cff` updated with real authors
 - [ ] `.zenodo.json` updated
@@ -21,3 +22,15 @@
 - [ ] release benchmark workflow documented
 - [ ] paper figure regeneration path working
 - [ ] DOI workflow configured
+
+## Machine-checkable audit
+
+Run:
+
+```bash
+python3 scripts/check_release_readiness.py
+```
+
+The script validates benchmark and dataset specs and audits `CITATION.cff`, `codemeta.json`, and
+`.zenodo.json` for parseability, placeholders, and cross-file mismatches. Manual release items
+remain manual checklist steps.

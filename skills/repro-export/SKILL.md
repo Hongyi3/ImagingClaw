@@ -4,7 +4,7 @@ cli_alias: repro
 description: Convert any supported ClawImaging run into an archive-ready reproducibility
   bundle.
 version: 0.1.0
-status: scaffold
+status: prototype
 modality: cross-cutting
 measurement_domain: n/a
 forward_model: artifact-bundle
@@ -20,7 +20,8 @@ chaining_partners:
 - paper-figure
 install:
   kind: pip
-  packages: []
+  packages:
+  - PyYAML
   bins: []
 ---
 
@@ -36,8 +37,8 @@ Many research repos stop at producing results. This skill makes the result porta
 ## Core capabilities
 
 1. Validate an existing run directory
-2. Ensure required bundle files are present
-3. Add citation and archive metadata stubs
+2. Inventory bundle contents and export an audit summary bundle
+3. Audit repository citation and archive metadata without mutating the source run
 
 ## Inputs
 
@@ -47,11 +48,12 @@ Many research repos stop at producing results. This skill makes the result porta
 ## Workflow
 
 1. Validate directory layout
-2. Fill missing metadata stubs where appropriate
-3. Recompute checksums
-4. Produce export summary
+2. Audit root metadata parseability, placeholders, and cross-file mismatches
+3. Inventory source bundle files
+4. Produce an export summary bundle
 
 ## Safety and provenance
 
 - Do not fabricate missing experimental metadata
 - Prefer warning over silent placeholder creation for scientific fields
+- Do not mutate the source artifact bundle in place

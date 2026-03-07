@@ -1,0 +1,39 @@
+experiment:
+  experiment_id: phase-example-gerchberg-saxton
+  title: Example coherent-imaging Gerchberg-Saxton declared run
+  modality: coherent-imaging
+  task: fourier-phase-retrieval
+  dataset:
+    name: synthetic-phase-objects
+    version: "0.1"
+    split: synthetic-example
+    access: open
+  forward_model:
+    operator: magnitude-of-fourier-transform
+    geometry: planar
+    noise_model: noiseless-synthetic
+  method: gerchberg-saxton
+  metrics:
+    - relative-error
+    - psnr
+    - ssim
+  seed: 31
+  hardware:
+    reference_device: cpu
+  notes:
+    - Example declared coherent-imaging smoke run using repository-local synthetic data.
+input:
+  measurement_path: ../data/phase_measurement.npy
+  reference_path: ../data/phase_reference.npy
+  provenance:
+    data_kind: synthetic-measurements
+    measurement_domain: fourier-magnitude
+    source: Repository-local synthetic coherent-imaging Fourier magnitudes for declared smoke runs.
+acquisition:
+  support_path: ../data/phase_support.npy
+  centered_fft: true
+  object_type: pure-phase
+method_config:
+  iterations: 48
+  initialization: random-phase
+  enforce_unit_amplitude: true

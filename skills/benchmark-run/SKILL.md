@@ -41,7 +41,7 @@ benchmark execution around machine-readable specs and dataset-registry-backed pr
 
 1. Load and validate benchmark specs
 2. Resolve benchmark dataset references against the dataset registry
-3. Dispatch the supported Phase 2 analytic CT or MRI baseline into a nested child artifact bundle
+3. Dispatch the supported CT, MRI, or coherent-imaging baseline into a nested child artifact bundle
 
 ## Inputs
 
@@ -53,7 +53,7 @@ benchmark execution around machine-readable specs and dataset-registry-backed pr
 
 1. Validate the benchmark spec schema and required baseline classes
 2. Resolve dataset metadata from `datasets/registry.yaml`
-3. Select the supported Phase 2 analytic method for CT (`fbp`) or MRI (`rss-zero-fill`)
+3. Select the supported method for CT (`fbp`), MRI (`rss-zero-fill`), or coherent imaging (`gerchberg-saxton`)
 4. Emit `resolved_config.yaml`, `metrics.json`, reproducibility files, and a nested child bundle through the artifact layer
 
 ## Outputs
@@ -70,3 +70,4 @@ benchmark execution around machine-readable specs and dataset-registry-backed pr
 - No benchmark dataset reference without a matching registry entry
 - Never hide whether the benchmark data are raw, processed, or synthetic
 - When upstream benchmark measurements are not present locally, mark the executed child run as a synthetic proxy explicitly
+- When a benchmark is repository-local synthetic data, mark the child run as direct synthetic benchmark execution rather than a proxy

@@ -95,7 +95,7 @@
       "cli_alias": "paperfig",
       "description": "Regenerate manuscript figures and tables directly from artifact bundles and benchmark specs.",
       "version": "0.1.0",
-      "status": "scaffold",
+      "status": "prototype",
       "modality": "cross-cutting",
       "measurement_domain": "n/a",
       "forward_model": "artifact-to-paper",
@@ -103,7 +103,9 @@
       "has_tests": false,
       "has_demo": true,
       "demo_command": "python skills/paper-figure/paper_figure.py --demo --output /tmp/paper-figure-demo",
-      "dependencies": [],
+      "dependencies": [
+        "numpy"
+      ],
       "tags": [],
       "trigger_keywords": [
         "paper figure",
@@ -121,7 +123,7 @@
       "cli_alias": "phase",
       "description": "Recover object estimates from magnitude-only coherent imaging measurements with explicit forward-model assumptions.",
       "version": "0.1.0",
-      "status": "scaffold",
+      "status": "beta",
       "modality": "coherent-imaging",
       "measurement_domain": "fourier-magnitude",
       "forward_model": "magnitude-of-fourier-transform",
@@ -129,7 +131,9 @@
       "has_tests": false,
       "has_demo": true,
       "demo_command": "python skills/phase-retrieve/phase_retrieve.py --demo --output /tmp/phase-retrieve-demo",
-      "dependencies": [],
+      "dependencies": [
+        "numpy"
+      ],
       "tags": [],
       "trigger_keywords": [
         "phase retrieval",
@@ -148,7 +152,7 @@
       "cli_alias": "repro",
       "description": "Convert any supported ClawImaging run into an archive-ready reproducibility bundle.",
       "version": "0.1.0",
-      "status": "scaffold",
+      "status": "prototype",
       "modality": "cross-cutting",
       "measurement_domain": "n/a",
       "forward_model": "artifact-bundle",
@@ -156,7 +160,9 @@
       "has_tests": false,
       "has_demo": true,
       "demo_command": "python skills/repro-export/repro_export.py --demo --output /tmp/repro-export-demo",
-      "dependencies": [],
+      "dependencies": [
+        "PyYAML"
+      ],
       "tags": [],
       "trigger_keywords": [
         "reproducibility bundle",
