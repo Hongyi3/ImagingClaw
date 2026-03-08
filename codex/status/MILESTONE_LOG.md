@@ -69,3 +69,25 @@ Entries are append-only. Add new entries at the end and do not rewrite prior ent
     metadata files still contain placeholder values.
   - Milestone 5 currently has no `codex/PHASE-*.md` work packet; define one before further
     milestone execution.
+
+## 2026-03-08
+
+- Transition: Added `codex/PHASE-4.md`, completed Milestone 5 — v1.0, and advanced the repository
+  to post-v1.0 planning with no further Codex work packet defined yet.
+- Status: Root release metadata is now synchronized from `release/v1.0.yaml`, release readiness
+  passes cleanly against both the manifest and `pyproject.toml`, and software-paper plus
+  benchmark-paper support packages are scriptable artifact bundles layered on the existing
+  benchmark, paper, and repro-export workflows.
+- Validation: `python3 scripts/sync_release_metadata.py`, `python3 scripts/generate_catalog.py`,
+  `python3 -m pytest`, `python3 -m src.clawimaging.cli list`, `ruff check .`,
+  `python3 -m mypy src`, and `python3 scripts/check_release_readiness.py` all passed.
+- Notes:
+  - Validation used `python3` because `python` is unavailable on PATH in this environment.
+  - `python3 -m pytest` passed with 66 tests, including release-manifest validation,
+    publication-package assembly, release auditing, coherent-imaging workflows, and prior CT/MRI
+    coverage.
+  - `python3 scripts/check_release_readiness.py` passed with zero errors and zero warnings.
+  - The root release manifest truthfully records the DOI state as pending until public archive
+    registration occurs.
+  - Post-v1.0 planning currently has no `codex/PHASE-*.md` work packet; define one before further
+    milestone execution.

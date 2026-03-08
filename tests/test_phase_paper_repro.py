@@ -122,6 +122,6 @@ def test_repro_export_demo_bundle(tmp_path: Path) -> None:
 
     validate_artifact_bundle(output_dir)
     metrics = json.loads((output_dir / "metrics.json").read_text(encoding="utf-8"))
-    assert metrics["metadata_audit_status"] == "warning"
+    assert metrics["metadata_audit_status"] == "passed"
     assert (output_dir / "tables" / "source_inventory.tsv").exists()
     assert (output_dir / "reproducibility" / "metadata_audit.json").exists()

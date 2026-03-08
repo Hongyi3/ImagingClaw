@@ -28,6 +28,7 @@ Likely targets:
 - tables must come from versioned artifacts
 - claims must map to benchmark specs
 - code, docs, and manuscript should reference the same release
+- release metadata should be synchronized from one manifest, not edited independently
 
 ## What reviewers should be able to do
 
@@ -35,3 +36,16 @@ Likely targets:
 - download or request the dataset using documented instructions
 - rerun at least one flagship result
 - trace every paper figure to an artifact ID
+
+## Packaging entrypoints
+
+Use these scriptable bundle builders for release-facing paper support:
+
+```bash
+python3 paper/scripts/build_package.py --package software --output /tmp/clawimaging-software-package
+python3 paper/scripts/build_package.py --package benchmark --demo --output /tmp/clawimaging-benchmark-package
+```
+
+The software package captures release metadata and core documentation. The benchmark package
+captures a resolved benchmark bundle, regenerated manuscript assets, dataset references, and a
+reproducibility audit bundle.

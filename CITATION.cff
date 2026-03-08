@@ -1,21 +1,22 @@
 cff-version: 1.2.0
-message: "Please update authors, repository URL, and DOI before public release."
-title: "ClawImaging"
+message: If you use ClawImaging, please cite this software release.
+title: ClawImaging
 type: software
-version: 0.0.1
+version: 1.0.0
 license: BSD-3-Clause
-abstract: >-
-  Reproducibility-first computational imaging skill library scaffold for
-  benchmark-driven inverse problems research.
+abstract: Reproducibility-first computational imaging skill library.
 authors:
-  - family-names: "Maintainers"
-    given-names: "ClawImaging"
-repository-code: "https://github.com/YOUR-ORG/ClawImaging"
-url: "https://github.com/YOUR-ORG/ClawImaging"
+- family-names: Hongyi3
+  alias: Hongyi3
+  email: hongyi3@users.noreply.github.com
+  affiliation: ClawImaging
+  given-names: Hongyi
+repository-code: https://github.com/Hongyi3/ImagingClaw
+url: https://github.com/Hongyi3/ImagingClaw
 keywords:
-  - computational imaging
-  - inverse problems
-  - tomography
-  - MRI
-  - phase retrieval
-  - reproducibility
+- computational imaging
+- inverse problems
+- tomography
+- MRI
+- phase retrieval
+- reproducibility

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "clawimaging"
-version = "0.0.1"
+version = "1.0.0"
 description = "Reproducibility-first computational imaging skill library scaffold."
 readme = "README.md"
 requires-python = ">=3.10"

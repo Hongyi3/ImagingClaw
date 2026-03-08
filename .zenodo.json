@@ -1,12 +1,13 @@
 {
   "title": "ClawImaging",
-  "description": "Reproducibility-first computational imaging skill library scaffold.",
+  "version": "1.0.0",
+  "description": "Reproducibility-first computational imaging skill library.",
   "license": "BSD-3-Clause",
   "upload_type": "software",
   "creators": [
     {
-      "name": "Replace, With Real Maintainer Names",
-      "affiliation": "Your Institution"
+      "name": "Hongyi3",
+      "affiliation": "ClawImaging"
     }
   ],
   "keywords": [
@@ -16,5 +17,6 @@
     "MRI",
     "phase retrieval",
     "reproducibility"
-  ]
+  ],
+  "notes": "Release archive DOI pending public deposit."
 }

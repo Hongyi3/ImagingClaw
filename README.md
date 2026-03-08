@@ -19,6 +19,7 @@ and paper-grade open research software.
 - Prototype CT and MRI smoke baselines with deterministic reports and artifact bundles
 - Starter skills for phase retrieval, benchmarking, reproducibility export, and paper figure
   regeneration
+- A manifest-driven release metadata workflow and scriptable software / benchmark paper packages
 - A minimal Python package with a working CLI, registry loader, router, and artifact-bundle
   helper
 - Declared experiment examples under `experiments/specs/`
@@ -97,6 +98,7 @@ clawimaging_prework/
 
 ## Status
 
-This repository is still a staged buildout rather than a finished platform, but the CT and MRI
-Phase 2 smoke workflows now execute end to end with deterministic synthetic data, structured
-reports, and benchmark-dispatch support.
+The staged buildout is now frozen at the `1.0.0` release boundary. The repository includes
+manifest-driven root release metadata, scriptable software-paper and benchmark-paper package
+builders, deterministic CT/MRI/coherent-imaging smoke workflows, and reproducibility audits that
+validate release readiness directly against the declared release manifest.

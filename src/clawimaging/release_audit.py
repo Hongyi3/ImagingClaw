@@ -3,34 +3,19 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import re
-from typing import Any
+from typing import Any, Callable
 
 import yaml
 
 from .benchmarks import load_benchmark_specs
 from .datasets import load_dataset_registry
 from .paths import find_repo_root
-
-
-PLACEHOLDER_MARKERS = (
-    "YOUR-ORG",
-    "Replace",
-    "replace",
-    "Please update",
-    "update authors",
-    "your lab or org",
-    "Your Institution",
+from .release_manifest import (
+    contains_placeholder,
+    default_release_manifest_path,
+    load_release_manifest,
+    render_release_metadata,
 )
-
-
-def _contains_placeholder(value: Any) -> bool:
-    if isinstance(value, str):
-        return any(marker in value for marker in PLACEHOLDER_MARKERS)
-    if isinstance(value, dict):
-        return any(_contains_placeholder(item) for item in value.values())
-    if isinstance(value, list):
-        return any(_contains_placeholder(item) for item in value)
-    return False
 
 
 def _load_yaml(path: Path) -> dict[str, Any]:
@@ -66,6 +51,39 @@ def _load_pyproject_project(path: Path) -> dict[str, str]:
     return payload
 
 
+def _compare_expected_fields(
+    actual: dict[str, Any],
+    expected: dict[str, Any],
+    *,
+    label: str,
+    fields: tuple[str, ...],
+) -> list[str]:
+    errors: list[str] = []
+    for field_name in fields:
+        if actual.get(field_name) != expected.get(field_name):
+            errors.append(
+                f"{label} field `{field_name}` does not match release manifest rendering"
+            )
+    return errors
+
+
+def _audit_release_manifest(root: Path) -> tuple[dict[str, Any] | None, dict[str, Any]]:
+    manifest_path = default_release_manifest_path(root)
+    try:
+        manifest = load_release_manifest(manifest_path)
+    except (FileNotFoundError, ValueError, yaml.YAMLError) as exc:
+        return None, {
+            "path": str(manifest_path.relative_to(root)),
+            "status": "error",
+            "detail": str(exc),
+        }
+    return manifest, {
+        "path": str(manifest_path.relative_to(root)),
+        "status": "ok",
+        "detail": "valid",
+    }
+
+
 def audit_release_metadata(repo_root: str | Path | None = None) -> dict[str, Any]:
     root = Path(repo_root).resolve() if repo_root is not None else find_repo_root()
     pyproject_path = root / "pyproject.toml"
@@ -76,6 +94,17 @@ def audit_release_metadata(repo_root: str | Path | None = None) -> dict[str, Any
     checks: list[dict[str, Any]] = []
     warnings: list[str] = []
     errors: list[str] = []
+
+    release_manifest, manifest_check = _audit_release_manifest(root)
+    checks.append(
+        {
+            "file": manifest_check["path"],
+            "status": manifest_check["status"],
+            "detail": manifest_check["detail"],
+        }
+    )
+    if manifest_check["status"] != "ok":
+        errors.append(f"release manifest invalid: {manifest_check['detail']}")
 
     files_payload: dict[str, dict[str, Any]] = {}
     for path, loader in (
@@ -95,61 +124,92 @@ def audit_release_metadata(repo_root: str | Path | None = None) -> dict[str, Any
             continue
 
         files_payload[path.name] = payload
-        status = "warning" if _contains_placeholder(payload) else "ok"
-        checks.append(
-            {
-                "file": path.name,
-                "status": status,
-                "detail": "contains placeholder metadata" if status == "warning" else "parseable",
-            }
-        )
-        if status == "warning":
-            warnings.append(f"{path.name} contains placeholder metadata")
+        if contains_placeholder(payload):
+            errors.append(f"{path.name} contains placeholder metadata")
+            checks.append(
+                {
+                    "file": path.name,
+                    "status": "error",
+                    "detail": "contains placeholder metadata",
+                }
+            )
+            continue
+        checks.append({"file": path.name, "status": "ok", "detail": "parseable"})
 
     project_payload = _load_pyproject_project(pyproject_path)
-    project_version = str(project_payload.get("version", "")).strip()
     project_name = str(project_payload.get("name", "")).strip()
+    project_version = str(project_payload.get("version", "")).strip()
 
-    citation = files_payload.get("CITATION.cff", {})
-    codemeta = files_payload.get("codemeta.json", {})
-    zenodo = files_payload.get(".zenodo.json", {})
-
-    title_values = {
-        "CITATION.cff": str(citation.get("title", "")).strip(),
-        "codemeta.json": str(codemeta.get("name", "")).strip(),
-        ".zenodo.json": str(zenodo.get("title", "")).strip(),
-    }
-    non_empty_titles = {name: value for name, value in title_values.items() if value}
-    if len(set(non_empty_titles.values())) > 1:
-        warnings.append("Release metadata titles do not match across CITATION.cff, codemeta.json, and .zenodo.json")
-
-    citation_version = str(citation.get("version", "")).strip()
-    if citation_version and project_version and citation_version != project_version:
-        warnings.append(
-            f"CITATION.cff version `{citation_version}` does not match pyproject version `{project_version}`"
-        )
-
-    repository_values = {
-        "CITATION.cff repository-code": str(citation.get("repository-code", "")).strip(),
-        "CITATION.cff url": str(citation.get("url", "")).strip(),
-        "codemeta.json codeRepository": str(codemeta.get("codeRepository", "")).strip(),
-    }
-    non_empty_repositories = {
-        name: value for name, value in repository_values.items() if value
-    }
-    if len(set(non_empty_repositories.values())) > 1:
-        warnings.append("Repository URLs do not match across release metadata files")
-
-    if project_name:
-        title_mismatch_sources = [
-            name
-            for name, value in non_empty_titles.items()
-            if value and value.lower() != project_name.lower()
-        ]
-        if title_mismatch_sources:
-            warnings.append(
-                f"Release metadata names do not match pyproject project.name `{project_name}`"
+    if release_manifest is not None:
+        manifest_project = dict(release_manifest["project"])
+        if project_name and project_name != manifest_project["package_name"]:
+            errors.append(
+                "pyproject project.name does not match release manifest package_name"
             )
+        if project_version and project_version != manifest_project["version"]:
+            errors.append(
+                "pyproject version does not match release manifest version"
+            )
+
+        expected_text = render_release_metadata(release_manifest)
+        expected_citation = yaml.safe_load(expected_text["CITATION.cff"]) or {}
+        expected_codemeta = json.loads(str(expected_text["codemeta.json"]))
+        expected_zenodo = json.loads(str(expected_text[".zenodo.json"]))
+
+        citation = files_payload.get("CITATION.cff", {})
+        codemeta = files_payload.get("codemeta.json", {})
+        zenodo = files_payload.get(".zenodo.json", {})
+        errors.extend(
+            _compare_expected_fields(
+                citation,
+                dict(expected_citation),
+                label="CITATION.cff",
+                fields=(
+                    "title",
+                    "version",
+                    "license",
+                    "repository-code",
+                    "url",
+                    "authors",
+                ),
+            )
+        )
+        errors.extend(
+            _compare_expected_fields(
+                codemeta,
+                dict(expected_codemeta),
+                label="codemeta.json",
+                fields=(
+                    "name",
+                    "version",
+                    "description",
+                    "codeRepository",
+                    "license",
+                    "author",
+                ),
+            )
+        )
+        errors.extend(
+            _compare_expected_fields(
+                zenodo,
+                dict(expected_zenodo),
+                label=".zenodo.json",
+                fields=(
+                    "title",
+                    "version",
+                    "description",
+                    "license",
+                    "creators",
+                ),
+            )
+        )
+        if release_manifest["archive"]["doi_status"] == "published":
+            if not citation.get("doi"):
+                errors.append("CITATION.cff must include a DOI when the release manifest marks it published")
+            if not codemeta.get("identifier"):
+                errors.append("codemeta.json must include an identifier when the release manifest marks it published")
+            if not zenodo.get("doi"):
+                errors.append(".zenodo.json must include a DOI when the release manifest marks it published")
 
     return {
         "status": "failed" if errors else ("warning" if warnings else "passed"),
@@ -159,39 +219,69 @@ def audit_release_metadata(repo_root: str | Path | None = None) -> dict[str, Any
         "summary": {
             "project_name": project_name,
             "project_version": project_version,
-            "title_values": non_empty_titles,
-            "repository_values": non_empty_repositories,
+            "release_manifest": manifest_check["path"],
+            "release_manifest_status": manifest_check["status"],
         },
+    }
+
+
+def _run_validation_check(
+    name: str,
+    action: Callable[[], Any],
+    *,
+    detail: Callable[[Any], str],
+) -> dict[str, Any]:
+    try:
+        payload = action()
+    except (FileNotFoundError, ValueError, json.JSONDecodeError, yaml.YAMLError) as exc:
+        return {
+            "name": name,
+            "status": "failed",
+            "detail": str(exc),
+        }
+    return {
+        "name": name,
+        "status": "passed",
+        "detail": detail(payload),
     }
 
 
 def evaluate_release_readiness(repo_root: str | Path | None = None) -> dict[str, Any]:
     root = Path(repo_root).resolve() if repo_root is not None else find_repo_root()
     metadata_audit = audit_release_metadata(root)
-
+    manifest_check = _run_validation_check(
+        "release_manifest_valid",
+        lambda: load_release_manifest(root / "release" / "v1.0.yaml"),
+        detail=lambda payload: f"{payload['source_path']} validated",
+    )
+    dataset_check = _run_validation_check(
+        "dataset_registry_valid",
+        lambda: load_dataset_registry(root / "datasets" / "registry.yaml"),
+        detail=lambda payload: f"{len(payload)} dataset entries validated",
+    )
+    benchmark_check = _run_validation_check(
+        "benchmark_specs_valid",
+        lambda: load_benchmark_specs(root / "benchmarks" / "specs"),
+        detail=lambda payload: f"{len(payload)} benchmark specs validated",
+    )
     checks = [
-        {
-            "name": "dataset_registry_valid",
-            "status": "passed",
-            "detail": f"{len(load_dataset_registry(root / 'datasets' / 'registry.yaml'))} dataset entries validated",
-        },
-        {
-            "name": "benchmark_specs_valid",
-            "status": "passed",
-            "detail": f"{len(load_benchmark_specs(root / 'benchmarks' / 'specs'))} benchmark specs validated",
-        },
+        dataset_check,
+        benchmark_check,
+        manifest_check,
         {
             "name": "release_metadata_audit",
             "status": metadata_audit["status"],
             "detail": (
-                f"{len(metadata_audit['errors'])} errors, {len(metadata_audit['warnings'])} warnings"
+                f"{len(metadata_audit['errors'])} errors, "
+                f"{len(metadata_audit['warnings'])} warnings"
             ),
         },
     ]
-
-    overall_status = "failed" if metadata_audit["errors"] else (
-        "warning" if metadata_audit["warnings"] else "passed"
-    )
+    overall_status = "passed"
+    if any(check["status"] == "failed" for check in checks):
+        overall_status = "failed"
+    elif any(check["status"] == "warning" for check in checks):
+        overall_status = "warning"
 
     return {
         "status": overall_status,

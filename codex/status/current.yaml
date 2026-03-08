@@ -1,37 +1,42 @@
 project_name: ClawImaging
-current_stage: "Milestone 5 — v1.0"
+current_stage: post-v1.0 planning
 current_phase_file: null
-last_completed_milestone: "Milestone 3 — Coherent imaging, publication, and release"
-next_milestone: "Milestone 5 — v1.0"
+last_completed_milestone: "Milestone 5 — v1.0"
+next_milestone: post-v1.0 planning
 next_phase_file: null
 status: awaiting-work-packet
 acceptance_criteria_status:
-  source: codex/PHASE-3.md
+  source: codex/PHASE-4.md
   overall: passed
   items:
-    - criterion: phase retrieval skill is usable in beta mode
+    - criterion: release/v1.0.yaml is the source of truth for root release metadata
       status: passed
-    - criterion: paper figure regeneration is scriptable
+    - criterion: python3 scripts/check_release_readiness.py passes
       status: passed
-    - criterion: release checklist is actionable
+    - criterion: software-paper package generation is scriptable
       status: passed
-    - criterion: the repository is close to software-paper submission quality
+    - criterion: benchmark-paper package generation is scriptable
+      status: passed
+    - criterion: status files mark Milestone 5 — v1.0 as complete
       status: passed
 blockers: []
 risks:
-  - Milestone 5 has no Codex work packet yet; define the next packet before asking Codex to execute further milestone work.
-  - Root release metadata files still contain placeholder public-release values, as reported by scripts/check_release_readiness.py.
+  - DOI registration remains pending external archive publication; release/v1.0.yaml records that state truthfully without fabricating a DOI.
+  - Post-v1.0 planning has no Codex work packet yet; define the next packet before asking Codex to execute further milestone work.
 last_validation:
-  ran_at: "2026-03-07T03:17:17-08:00"
+  ran_at: "2026-03-08T09:58:20-07:00"
   overall_status: passed
-  summary: Phase 3 validation passed using python3 because python is unavailable on PATH. Phase retrieval now runs a beta Gerchberg-Saxton workflow with direct coherent-imaging benchmark dispatch, paper figure regeneration is script-driven from artifact bundles, repro-export audits release metadata, and the repository advances beyond codex/PHASE-3.md to Milestone 5 — v1.0.
+  summary: Phase 4 validation passed using python3 because python is unavailable on PATH. Release metadata is now synchronized from release/v1.0.yaml, release readiness passes cleanly, software-paper and benchmark-paper support packages are scriptable, and the repository advances beyond codex/PHASE-4.md into post-v1.0 planning with no further work packet defined yet.
   commands:
+    - command: python3 scripts/sync_release_metadata.py
+      result: passed
+      details: Synchronized CITATION.cff, codemeta.json, and .zenodo.json from release/v1.0.yaml before validation.
     - command: python3 scripts/generate_catalog.py
       result: passed
-      details: Used python3 because python is unavailable on PATH. skills/catalog.json was regenerated with updated benchmark, phase-retrieve, paper-figure, and repro-export skill metadata.
+      details: Used python3 because python is unavailable on PATH. skills/catalog.json was regenerated with updated repro-export methodology text.
     - command: python3 -m pytest
       result: passed
-      details: Used python3 because python is unavailable on PATH. 61 tests passed, covering CT/MRI baselines, coherent-imaging workflows, benchmark dispatch, paper asset regeneration, release auditing, metrics, datasets, artifacts, and CLI behavior.
+      details: Used python3 because python is unavailable on PATH. 66 tests passed, covering release-manifest validation, publication-package assembly, release auditing, CT/MRI baselines, coherent-imaging workflows, benchmark dispatch, paper asset regeneration, metrics, datasets, artifacts, and CLI behavior.
     - command: python3 -m src.clawimaging.cli list
       result: passed
       details: Used python3 because python is unavailable on PATH. The CLI listed all six registered skills.
@@ -39,5 +44,8 @@ last_validation:
       result: passed
     - command: python3 -m mypy src
       result: passed
-      details: Used python3 because python is unavailable on PATH. Source typing checks passed for 31 source files, including the new phase, paper, repro-export, and release audit modules.
-last_updated: "2026-03-07T03:17:17-08:00"
+      details: Used python3 because python is unavailable on PATH. Source typing checks passed for 34 source files, including the new release-manifest, benchmark workflow, publication package, and release audit modules.
+    - command: python3 scripts/check_release_readiness.py
+      result: passed
+      details: Used python3 because python is unavailable on PATH. Dataset registry, benchmark specs, release manifest, and synchronized root release metadata all validated with zero errors and zero warnings.
+last_updated: "2026-03-08T09:58:20-07:00"

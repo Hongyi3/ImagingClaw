@@ -6,6 +6,8 @@ import stat
 from pathlib import Path
 from typing import Any
 
+from .release_manifest import default_release_manifest_path, load_release_manifest, render_release_metadata
+
 
 MINIMUM_BUNDLE_FILES = [
     "report.md",
@@ -123,6 +125,18 @@ def init_artifact_bundle(
     (root / "tables").mkdir(parents=True, exist_ok=True)
     (root / "reproducibility").mkdir(parents=True, exist_ok=True)
 
+    rendered_metadata: dict[str, Any] | None = None
+    try:
+        release_manifest = load_release_manifest(default_release_manifest_path())
+    except (FileNotFoundError, ValueError):
+        release_manifest = None
+    if release_manifest is not None:
+        rendered_metadata = render_release_metadata(
+            release_manifest,
+            title=title,
+            description=summary,
+        )
+
     (root / "report.md").write_text(
         _render_report(
             title=title,
@@ -155,23 +169,31 @@ def init_artifact_bundle(
         encoding="utf-8",
     )
     (root / "CITATION.cff").write_text(
-        "cff-version: 1.2.0\n"
-        f"title: {title}\n"
-        'message: "Replace stub metadata before public release."\n'
-        "type: software\n",
+        (
+            str(rendered_metadata["CITATION.cff"])
+            if rendered_metadata is not None
+            else "cff-version: 1.2.0\n"
+            f"title: {title}\n"
+            'message: "Replace stub metadata before public release."\n'
+            "type: software\n"
+        ),
         encoding="utf-8",
     )
     (root / "codemeta.json").write_text(
-        json.dumps(
-            {
-                "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
-                "@type": "SoftwareSourceCode",
-                "name": title,
-                "description": summary,
-            },
-            indent=2,
-        )
-        + "\n",
+        (
+            str(rendered_metadata["codemeta.json"])
+            if rendered_metadata is not None
+            else json.dumps(
+                {
+                    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+                    "@type": "SoftwareSourceCode",
+                    "name": title,
+                    "description": summary,
+                },
+                indent=2,
+            )
+            + "\n"
+        ),
         encoding="utf-8",
     )
     (root / "ro-crate-metadata.json").write_text(

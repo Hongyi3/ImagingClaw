@@ -1,0 +1,47 @@
+project:
+  title: ClawImaging
+  package_name: clawimaging
+  version: 1.0.0
+  description: Reproducibility-first computational imaging skill library.
+  repository_url: https://github.com/Hongyi3/ImagingClaw
+  license: BSD-3-Clause
+  keywords:
+    - computational imaging
+    - inverse problems
+    - tomography
+    - MRI
+    - phase retrieval
+    - reproducibility
+maintainers:
+  - display_name: Hongyi3
+    family_names: Hongyi3
+    given_names: Hongyi
+    affiliation: ClawImaging
+    email: hongyi3@users.noreply.github.com
+    github: Hongyi3
+archive:
+  doi_status: pending
+  doi:
+  release_tag: v1.0.0
+  notes:
+    - Zenodo DOI will be assigned after the first public archive deposit.
+packages:
+  software:
+    title: ClawImaging v1.0.0 software-paper support package
+    summary: Curated software-paper support bundle with release metadata, core docs, and reproducibility inventory.
+    include_paths:
+      - README.md
+      - PROJECT-CHARTER.md
+      - BLUEPRINT.md
+      - docs/architecture.md
+      - docs/benchmark-policy.md
+      - docs/dataset-policy.md
+      - docs/reproducibility-contract.md
+      - docs/release-checklist.md
+      - docs/publication-strategy.md
+      - skills/catalog.json
+      - release/v1.0.yaml
+  benchmark:
+    title: ClawImaging v1.0.0 benchmark-paper support package
+    summary: Benchmark-paper support bundle with resolved benchmark provenance, dataset references, manuscript assets, and audit outputs.
+    default_benchmark_spec: benchmarks/specs/lodopab_ct_baselines.yaml

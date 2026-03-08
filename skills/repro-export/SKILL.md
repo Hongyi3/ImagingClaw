@@ -38,7 +38,7 @@ Many research repos stop at producing results. This skill makes the result porta
 
 1. Validate an existing run directory
 2. Inventory bundle contents and export an audit summary bundle
-3. Audit repository citation and archive metadata without mutating the source run
+3. Audit the manifest-driven repository release metadata without mutating the source run
 
 ## Inputs
 
@@ -48,12 +48,13 @@ Many research repos stop at producing results. This skill makes the result porta
 ## Workflow
 
 1. Validate directory layout
-2. Audit root metadata parseability, placeholders, and cross-file mismatches
+2. Audit `release/v1.0.yaml`, `CITATION.cff`, `codemeta.json`, and `.zenodo.json` for exact
+   manifest consistency
 3. Inventory source bundle files
 4. Produce an export summary bundle
 
 ## Safety and provenance
 
 - Do not fabricate missing experimental metadata
-- Prefer warning over silent placeholder creation for scientific fields
+- Treat placeholder release metadata as invalid rather than silently tolerating it
 - Do not mutate the source artifact bundle in place

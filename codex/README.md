@@ -34,6 +34,7 @@ not whichever phase number appears to match the milestone number.
 2. `PHASE-1.md` — benchmark and dataset registry
 3. `PHASE-2.md` — CT and MRI implementation
 4. `PHASE-3.md` — coherent imaging, publication, and release
+5. `PHASE-4.md` — v1.0 release freeze
 
 ## Example prompt
 

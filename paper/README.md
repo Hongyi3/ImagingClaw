@@ -13,3 +13,13 @@ provenance notes linking manuscript assets to benchmark artifact IDs.
 
 - `python3 paper/scripts/regenerate_assets.py --input <bundle> --output <paper-bundle>`
 - `python3 paper/scripts/regenerate_assets.py --demo --output <paper-bundle>`
+- `python3 paper/scripts/build_package.py --package software --output <package-bundle>`
+- `python3 paper/scripts/build_package.py --package benchmark --demo --output <package-bundle>`
+
+## Package modes
+
+- `software` copies the release manifest, synchronized root metadata, catalog snapshot, and core
+  repo docs into an artifact bundle suitable for software-paper support.
+- `benchmark` packages a benchmark-run bundle together with regenerated manuscript assets and a
+  repro-export audit bundle. Use `--demo` to build it from the repo's supported smoke benchmark,
+  or `--source-bundle <benchmark-bundle-or-child-bundle>` to package an existing benchmark run.
